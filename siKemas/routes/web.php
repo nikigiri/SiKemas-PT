@@ -42,4 +42,14 @@ Route::middleware(['auth', RoleMiddleware::class . ':user'])->group(function () 
 
 });
 
+// Google Socialite
+Route::get('/auth/google', [App\Http\Controllers\Auth\GoogleController::class, 'redirect'])->name('auth.google');
+Route::get('/auth/google/callback', [App\Http\Controllers\Auth\GoogleController::class, 'callback'])->name('auth.google.callback');
+
+// Complete Profile (khusus user Google yang belum lengkap)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/complete-profile', [App\Http\Controllers\Auth\GoogleController::class, 'completeProfileForm'])->name('complete.profile');
+    Route::post('/complete-profile', [App\Http\Controllers\Auth\GoogleController::class, 'completeProfile'])->name('complete.profile.store');
+});
+
 require __DIR__.'/auth.php';
