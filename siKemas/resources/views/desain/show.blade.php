@@ -88,20 +88,22 @@
                 <!-- Tombol Aksi -->
                 <div class="flex justify-between">
                     <a href="{{ route('produk.index') }}"
-                       class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
                         ← Kembali ke Produk
                     </a>
 
-                    <form method="POST" action="{{ route('desain.destroy', $desain->id) }}"
-                          onsubmit="return confirm('Yakin hapus desain ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                            Hapus Desain
-                        </button>
-                    </form>
-                </div>
+                    <div class="flex gap-3">
+                        <a href="{{ route('produk.pilih-kemasan', $desain->produk_id) }}"
+                        class="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50">
+                            🔄 Ulangi
+                        </a>
 
+                        <button onclick="alert('Fitur export segera tersedia!')"
+                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                            💾 Simpan
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

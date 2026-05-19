@@ -32,7 +32,7 @@
                         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                             <!-- Gambar Produk -->
                             @if ($produk->gambar_logo)
-                                <img src="{{ asset('storage/' . $produk->gambar_logo) }}" alt="{{ $produk->nama_produk }}" class="w-full h-48 object-cover">
+                                <img src="{{ asset('storage/' . $produk->gambar_logo) }}" alt="{{ $produk->nama_produk }}" class="w-full h-40 object-cover">
                             @else
                                 <div class="w-full h-48 bg-gray-100 flex items-center justify-center">
                                     <span class="text-gray-400 text-sm">Tidak ada gambar</span>
@@ -47,7 +47,10 @@
 
                                 <!-- Tombol Aksi -->
                                 <div class="flex justify-between mt-4">
-                                    <a href="{{ route('produk.edit', $produk->id) }}" class="text-sm text-indigo-600 hover:underline">Edit</a>
+                                    @if ($produk->desains->isNotEmpty())
+                                        <a href="{{ route('desain.show', $produk->desains->last()->id) }}" class="text-sm text-indigo-600 hover:underline">Edit</a>
+                                    @endif
+
                                     <form method="POST" action="{{ route('produk.destroy', $produk->id) }}" onsubmit="return confirm('Yakin hapus produk ini?')">
                                         @csrf
                                         @method('DELETE')

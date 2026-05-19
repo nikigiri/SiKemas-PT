@@ -27,7 +27,7 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
 Route::middleware(['auth', RoleMiddleware::class . ':user'])->group(function () {
 
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return redirect()->route('produk.index');
     })->name('dashboard');
 
     // Produk

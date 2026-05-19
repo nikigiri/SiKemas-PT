@@ -15,6 +15,7 @@ class ProdukController extends Controller
     public function index()
     {
         $produks = Produk::where('user_id', Auth::id())
+                        ->with('desains')
                         ->orderBy('created_at', 'asc')
                         ->get();
 

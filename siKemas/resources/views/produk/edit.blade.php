@@ -42,7 +42,7 @@
                             <div>
                                 <x-input-label for="kategori_produk" :value="__('Kategori Produk')" />
                                 <select id="kategori_produk" name="kategori_produk" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                    <option value="">-- Pilih Kategori --</option>
+                                    <option value="">Pilih Kategori</option>
                                     <option value="Makanan & Minuman" {{ old('kategori_produk', $produk->kategori_produk) == 'Makanan & Minuman' ? 'selected' : '' }}>Makanan & Minuman</option>
                                     <option value="Kesehatan & Kecantikan" {{ old('kategori_produk', $produk->kategori_produk) == 'Kesehatan & Kecantikan' ? 'selected' : '' }}>Kesehatan & Kecantikan</option>
                                     <option value="Fashion & Aksesoris" {{ old('kategori_produk', $produk->kategori_produk) == 'Fashion & Aksesoris' ? 'selected' : '' }}>Fashion & Aksesoris</option>
@@ -76,12 +76,21 @@
 
                     <!-- Tombol -->
                     <div class="flex justify-between mt-6">
-                        <a href="{{ route('produk.index') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                            Batal
+                        <a href="{{ route('produk.index') }}"
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            ← Kembali ke Produk
                         </a>
-                        <x-primary-button>
-                            Simpan Perubahan
-                        </x-primary-button>
+
+                        <div class="flex gap-3">
+                            <form method="POST" action="{{ route('desain.destroy', $desain->id) }}"
+                                onsubmit="return confirm('Yakin hapus desain ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </form>
             </div>
