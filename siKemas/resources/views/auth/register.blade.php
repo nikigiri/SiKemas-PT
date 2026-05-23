@@ -27,6 +27,18 @@
             <x-input-error :messages="$errors->get('alamat_usaha')" class="mt-2" />
         </div>
         <div class="mt-4">
+            <x-input-label for="kwt_id" :value="__('KWT')" />
+            <select id="kwt_id" name="kwt_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                <option value="">-- Pilih KWT --</option>
+                @foreach ($kwts as $kwt)
+                    <option value="{{ $kwt->id }}" {{ old('kwt_id') == $kwt->id ? 'selected' : '' }}>
+                        {{ $kwt->nama_kwt }}
+                    </option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('kwt_id')" class="mt-2" />
+        </div>
+        <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
             <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />

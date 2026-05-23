@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kwt;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -15,19 +16,12 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
-        return view('auth.register');
+        $kwts = Kwt::all();
+        return view('auth.register', compact('kwts'));
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -36,6 +30,7 @@ class RegisteredUserController extends Controller
             'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'no_tlp'        => ['required', 'string', 'max:20'],
             'alamat_usaha'  => ['required', 'string'],
+            'kwt_id'        => ['required', 'exists:kwts,id'],
             'password'      => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -45,6 +40,8 @@ class RegisteredUserController extends Controller
             'email'         => $request->email,
             'no_tlp'        => $request->no_tlp,
             'alamat_usaha'  => $request->alamat_usaha,
+            'kwt_id'        => $request->kwt_id,
+            'status'        => 'pending',
             'password'      => Hash::make($request->password),
         ]);
 
@@ -52,8 +49,6 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('login'));
+        return redirect()->route('login')->with('status', 'Registrasi berhasil! Akun kamu sedang menunggu persetujuan admin.');
     }
 }

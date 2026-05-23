@@ -10,12 +10,15 @@
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                @if (Auth::user()->hasRole('admin'))
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                        {{ __('Dashboard') }}
+                    </x-nav-link>
+                @else
                     <x-nav-link :href="route('produk.index')" :active="request()->routeIs('produk.*')">
                         {{ __('Produk') }}
                     </x-nav-link>
-                </div>
+                @endif
             </div>
 
             <!-- Settings Dropdown -->

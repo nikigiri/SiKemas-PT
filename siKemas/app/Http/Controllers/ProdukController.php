@@ -25,7 +25,8 @@ class ProdukController extends Controller
     // Tampilkan form tambah produk (step 1: info produk)
     public function create()
     {
-        return view('produk.create');
+        $kategoris = \App\Models\Kategori::all();
+        return view('produk.create', compact('kategoris'));
     }
 
     // Simpan produk baru

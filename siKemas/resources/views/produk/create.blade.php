@@ -42,11 +42,11 @@
                                 <x-input-label for="kategori_produk" :value="__('Kategori Produk')" />
                                 <select id="kategori_produk" name="kategori_produk" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
                                     <option value="">Pilih Kategori</option>
-                                    <option value="Makanan & Minuman" {{ old('kategori_produk') == 'Makanan & Minuman' ? 'selected' : '' }}>Makanan & Minuman</option>
-                                    <option value="Kesehatan & Kecantikan" {{ old('kategori_produk') == 'Kesehatan & Kecantikan' ? 'selected' : '' }}>Kesehatan & Kecantikan</option>
-                                    <option value="Fashion & Aksesoris" {{ old('kategori_produk') == 'Fashion & Aksesoris' ? 'selected' : '' }}>Fashion & Aksesoris</option>
-                                    <option value="Elektronik" {{ old('kategori_produk') == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
-                                    <option value="Lainnya" {{ old('kategori_produk') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                    @foreach ($kategoris as $kategori)
+                                        <option value="{{ $kategori->id }}" {{ old('kategori_produk') == $kategori->id ? 'selected' : '' }}>
+                                            {{ $kategori->nama_kategori }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 <x-input-error :messages="$errors->get('kategori_produk')" class="mt-2" />
                             </div>

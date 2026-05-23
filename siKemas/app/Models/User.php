@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'nama_usaha', 'email', 'no_tlp', 'alamat_usaha', 'password'])]
+#[Fillable(['name', 'nama_usaha', 'email', 'no_tlp', 'alamat_usaha', 'password', 'kwt_id', 'status'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -20,6 +20,11 @@ class User extends Authenticatable
     public function produks()
     {
         return $this->hasMany(Produk::class);
+    }
+
+    public function kwt()
+    {
+        return $this->belongsTo(Kwt::class);
     }
 
     protected function casts(): array
