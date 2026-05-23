@@ -1,4 +1,4 @@
-<?php
+npm <?php
 
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;

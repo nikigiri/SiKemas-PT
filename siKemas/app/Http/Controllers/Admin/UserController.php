@@ -61,6 +61,61 @@ class UserController extends Controller
         return redirect()->route('admin.user.index')->with('success', 'Admin baru berhasil ditambahkan!');
     }
 
+    //history
+    public function history(User $user)
+    {
+        // Ambil semua produk milik user beserta desainnya
+        $produks = $user->produks()->with([
+            'desains.jenisKemasan',
+            'desains.hasilEkspors',
+        ])->latest()->get();
+
+        // Bangun timeline history dari produk & desain
+        $histories = collect();
+
+        foreach ($produks as $produk) {
+            // Catat aktivitas buat produk
+            $histories->push([
+                'type'        => 'produk',
+                'action'      => 'Membuat Produk',
+                'title'       => $produk->nama_produk,
+                'description' => $produk->tagline ?? '-',
+                'date'        => $produk->created_at,
+                'icon'        => 'produk',
+            ]);
+
+            foreach ($produk->desains as $desain) {
+                // Catat aktivitas buat desain
+                $histories->push([
+                    'type'        => 'desain',
+                    'action'      => 'Membuat Desain',
+                    'title'       => $desain->judul_desain,
+                    'description' => $desain->jenisKemasan->nama_kemasan ?? '-',
+                    'status'      => $desain->status_desain,
+                    'date'        => $desain->created_at,
+                    'icon'        => 'desain',
+                ]);
+
+                // Catat aktivitas ekspor kalau ada
+                foreach ($desain->hasilEkspors as $ekspor) {
+                    $histories->push([
+                        'type'        => 'ekspor',
+                        'action'      => 'Mengekspor Desain',
+                        'title'       => $desain->judul_desain,
+                        'description' => 'File diekspor',
+                        'date'        => $ekspor->created_at,
+                        'icon'        => 'ekspor',
+                    ]);
+                }
+            }
+        }
+
+        // Urutkan semua aktivitas dari yang terbaru
+        $histories = $histories->sortByDesc('date')->values();
+
+        return view('admin.user.history', compact('user', 'histories'));
+    }
+
     // Hapus user
     public function destroy($id)
     {
