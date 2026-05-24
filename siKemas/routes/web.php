@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\DesainController;
@@ -143,5 +144,20 @@ Route::middleware(['auth'])->group(function () {
 //socialite googl
 Route::get('/auth/google',          [GoogleController::class, 'redirect'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
+
+Route::middleware('guest')->group(function () {
+
+    Route::get('/register', [RegisteredUserController::class, 'create'])
+        ->name('register');
+
+    Route::post('/register', [RegisteredUserController::class, 'storeStep1'])
+        ->name('register.store');
+
+    Route::get('/register/business', [RegisteredUserController::class, 'createBusiness'])
+        ->name('register.business');
+
+    Route::post('/register/business', [RegisteredUserController::class, 'storeBusiness'])
+        ->name('register.business.store');
+});
 
 require __DIR__ . '/auth.php';

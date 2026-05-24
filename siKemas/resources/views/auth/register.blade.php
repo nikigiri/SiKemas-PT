@@ -72,7 +72,7 @@
 
                         {{-- FORM --}}
                         <form method="POST"
-                              action="{{ route('register') }}"
+                              action="{{ route('register.store') }}"
                               class="space-y-5">
 
                             @csrf
@@ -98,40 +98,6 @@
 
                                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
 
-                            </div>
-
-                            {{-- NAMA USAHA --}}
-                            <div>
-
-                                <x-input-label
-                                    for="nama_usaha"
-                                    :value="__('Nama Usaha')"
-                                />
-
-                                <x-text-input
-                                    id="nama_usaha"
-                                    class="block mt-2 w-full rounded-2xl border-0 bg-gray-100 px-5 py-3.5 focus:ring-2 focus:ring-[#2f6d46]"
-                                    type="text"
-                                    name="nama_usaha"
-                                    :value="old('nama_usaha')"
-                                    required
-                                    placeholder="Masukkan nama usaha"
-                                />
-
-                                <x-input-error :messages="$errors->get('nama_usaha')" class="mt-2" />
-
-                            </div>
-                            <div class="mt-4">
-                                <x-input-label for="kwt_id" :value="__('KWT')" />
-                                <select id="kwt_id" name="kwt_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                    <option value="">-- Pilih KWT --</option>
-                                    @foreach ($kwts as $kwt)
-                                        <option value="{{ $kwt->id }}" {{ old('kwt_id') == $kwt->id ? 'selected' : '' }}>
-                                            {{ $kwt->nama_kwt }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <x-input-error :messages="$errors->get('kwt_id')" class="mt-2" />
                             </div>
 
                             {{-- EMAIL --}}
@@ -175,27 +141,6 @@
                                 />
 
                                 <x-input-error :messages="$errors->get('no_tlp')" class="mt-2" />
-
-                            </div>
-
-                            {{-- ALAMAT --}}
-                            <div>
-
-                                <x-input-label
-                                    for="alamat_usaha"
-                                    :value="__('Alamat Usaha')"
-                                />
-
-                                <textarea
-                                    id="alamat_usaha"
-                                    name="alamat_usaha"
-                                    rows="3"
-                                    required
-                                    placeholder="Masukkan alamat usaha"
-                                    class="block mt-2 w-full rounded-2xl border-0 bg-gray-100 px-5 py-3.5 focus:ring-2 focus:ring-[#2f6d46]"
-                                >{{ old('alamat_usaha') }}</textarea>
-
-                                <x-input-error :messages="$errors->get('alamat_usaha')" class="mt-2" />
 
                             </div>
 
@@ -264,7 +209,7 @@
                                        hover:opacity-90 transition shadow-lg shadow-green-200"
                             >
 
-                                Daftar
+                                Lanjutkan
 
                             </button>
 
