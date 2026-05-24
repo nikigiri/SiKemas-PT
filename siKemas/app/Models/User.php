@@ -27,6 +27,16 @@ class User extends Authenticatable
         return $this->belongsTo(Kwt::class);
     }
 
+    public function desains()
+{
+    return $this->hasManyThrough(
+        \App\Models\Desain::class,
+        \App\Models\Produk::class,
+        'user_id',  
+        'produk_id', 
+    );
+}
+
     protected function casts(): array
     {
         return [

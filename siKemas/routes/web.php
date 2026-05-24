@@ -116,8 +116,8 @@ Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
     ->group(function () {
 
         Route::get('/dashboard', function () {
-            return redirect()->route('produk.index');
-        })->name('dashboard');
+    return view('dashboard');
+})->name('dashboard');
 
         // Produk
         Route::resource('produk', ProdukController::class);

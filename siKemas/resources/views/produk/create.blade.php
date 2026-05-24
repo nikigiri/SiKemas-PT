@@ -64,7 +64,7 @@
                                     class="w-full h-14 px-5 rounded-2xl border-0
                                            bg-[#f3f7f7] text-gray-800
                                            placeholder-gray-400
-                                           focus:ring-2 focus:ring-indigo-500"
+                                           focus:ring-2 focus:ring-green-500"
                                 >
 
                                 <x-input-error :messages="$errors->get('nama_produk')" class="mt-2" />
@@ -90,7 +90,7 @@
                                     class="w-full h-14 px-5 rounded-2xl border-0
                                            bg-[#f3f7f7] text-gray-800
                                            placeholder-gray-400
-                                           focus:ring-2 focus:ring-indigo-500"
+                                           focus:ring-2 focus:ring-green-500"
                                 >
 
                                 <x-input-error :messages="$errors->get('tagline')" class="mt-2" />
@@ -115,14 +115,14 @@
                                     class="w-full px-5 py-4 rounded-2xl border-0
                                            bg-[#f3f7f7] text-gray-800
                                            placeholder-gray-400
-                                           focus:ring-2 focus:ring-indigo-500 resize-none"
+                                           focus:ring-2 focus:ring-green-500 resize-none"
                                 >{{ old('deskripsi_produk') }}</textarea>
 
                                 <x-input-error :messages="$errors->get('deskripsi_produk')" class="mt-2" />
 
                             </div>
 
-                            {{-- KATEGORI --}}
+                           {{-- KATEGORI --}}
                             <div>
 
                                 <label for="kategori_produk"
@@ -132,45 +132,42 @@
 
                                 </label>
 
-                                <div class="relative">
+                                <div class="relative" x-data="{ open: false, selectedName: 'Pilih Kategori', selectedValue: '{{ old('kategori_produk', '') }}' }">
+                                    
+                                    <input type="hidden" id="kategori_produk" name="kategori_produk" :value="selectedValue" required>
 
-                                    <select
-                                        id="kategori_produk"
-                                        name="kategori_produk"
-                                        required
-                                        class="w-full h-14 px-5 rounded-2xl border-0
-                                               bg-[#f3f7f7] text-gray-800
-                                               focus:ring-2 focus:ring-indigo-500
-                                               appearance-none"
-                                    >
+                                    <button type="button" @click="open = !open" 
+                                            class="w-full h-14 px-5 rounded-2xl bg-[#f3f7f7] text-gray-800 text-left flex items-center justify-between border-0 focus:ring-2 focus:ring-green-500 outline-none">
+                                        <span x-text="selectedName">Pilih Kategori</span>
+                                        <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
 
-                                        <option value="">
+                                    <div x-show="open" @click.away="open = false" 
+                                         class="absolute z-10 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl max-h-60 overflow-y-auto p-2"
+                                         x-transition>
+                                        
+                                        <div @click="selectedValue = ''; selectedName = 'Pilih Kategori'; open = false"
+                                             class="px-5 py-3 rounded-xl cursor-pointer text-gray-400 hover:bg-green-600 hover:text-white transition duration-150">
                                             Pilih Kategori
-                                        </option>
+                                        </div>
 
                                         @foreach ($kategoris as $kategori)
-
-                                            <option
-                                                value="{{ $kategori->id }}"
-                                                {{ old('kategori_produk') == $kategori->id ? 'selected' : '' }}
-                                            >
-
+                                            <div @click="selectedValue = '{{ $kategori->id }}'; selectedName = '{{ $kategori->nama_kategori }}'; open = false"
+                                                 x-init="if(selectedValue == '{{ $kategori->id }}') selectedName = '{{ $kategori->nama_kategori }}'"
+                                                 class="px-5 py-3 rounded-xl cursor-pointer text-gray-800 hover:bg-green-600 hover:text-white transition duration-150">
                                                 {{ $kategori->nama_kategori }}
-
-                                            </option>
-
+                                            </div>
                                         @endforeach
-
-                                    </select>
+                                    </div>
 
                                 </div>
 
                                 <x-input-error :messages="$errors->get('kategori_produk')" class="mt-2" />
 
                             </div>
-
                         </div>
-
                         {{-- RIGHT UPLOAD --}}
                         <div>
 

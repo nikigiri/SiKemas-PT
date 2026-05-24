@@ -1,5 +1,4 @@
 <x-app-layout>
-    
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -13,14 +12,14 @@
             <!-- Tombol Buat Kemasan Baru -->
             <div class="mb-6">
                 <a href="{{ route('produk.create') }}" class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                    + Buat Kemasan Baru
+                    + Buat produk Baru
                 </a>
             </div>
 
             <!-- Grid Produk -->
             @if ($produks->isEmpty())
                 <div class="bg-white rounded-lg shadow-sm p-12 text-center text-gray-500">
-                    Belum ada produk. Klik "Buat Kemasan Baru" untuk memulai!
+                    Belum ada produk. Klik "Buat produk Baru" untuk memulai!
                 </div>
             @else
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
