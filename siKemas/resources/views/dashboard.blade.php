@@ -5,15 +5,49 @@
     {{-- Main Content --}}
     <div class="relative z-10 p-6 md:p-8 max-w-7xl mx-auto mt-4">
 
-        {{-- Welcome --}}
-        <div class="mb-10">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
-                Hallo, selamat datang di SiKemas 👋
-            </h1>
-            <p class="text-gray-500 mt-3 max-w-2xl text-base md:text-lg leading-relaxed">
-                Buat desain kemasan produk UMKM-mu lebih menarik dan profesional
-                dengan bantuan AI dan template desain modern.
-            </p>
+        {{-- BANNER --}}
+        <div class="relative overflow-hidden rounded-[32px] mb-10 shadow-xl">
+
+            {{-- IMAGE --}}
+            <img
+                src="{{ asset('images/banner-fix.png') }}"
+                alt="Banner Dashboard"
+                class="w-full h-[260px] md:h-[340px] object-cover"
+            >
+
+            {{-- CONTENT --}}
+            <div class="absolute inset-0 flex items-center">
+
+                <div class="px-6 md:px-12 max-w-2xl text-green">
+
+                    <div class="inline-flex items-center gap-2
+                                bg-white/10 backdrop-blur-md
+                                border border-white/20
+                                px-4 py-2 rounded-full mb-5">
+
+                        <span class="w-2 h-2 bg-green-300 rounded-full"></span>
+
+                        AI Packaging Generator
+
+                    </div>
+
+                    <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
+
+                        Hallo, {{ Auth::user()->name }} 👋
+
+                    </h1>
+
+                    <p class="mt-4 text-green/90 text-base md:text-lg leading-relaxed">
+
+                        Buat desain kemasan produk UMKM lebih menarik,
+                        modern, dan profesional bersama SiKemas AI.
+
+                    </p>
+
+                </div>
+
+            </div>
+
         </div>
 
         {{-- Grid --}}
@@ -21,7 +55,7 @@
 
             {{-- Create Product Card --}}
             <a href="{{ route('produk.create') }}"
-               class="group relative overflow-hidden rounded-3xl bg-green-600 p-6 min-h-[190px]
+               class="group relative overflow-hidden rounded-3xl bg-green-800 p-6 min-h-[190px]
                       flex flex-col justify-between shadow-lg shadow-green-200
                       hover:scale-[1.02] transition duration-300">
 
@@ -87,8 +121,8 @@
             @empty
                 <div class="col-span-1 sm:col-span-1 lg:col-span-2">
                     <div class="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center bg-white h-full flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto mb-5">
-                            <svg class="w-8 h-8 text-indigo-300" fill="none" stroke="currentColor"
+                        <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-5">
+                            <svg class="w-8 h-8 text-indigo-300" fill="none" stroke="green"
                                  stroke-width="1.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V7"/>

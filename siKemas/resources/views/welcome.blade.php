@@ -101,50 +101,30 @@
                 {{-- RIGHT --}}
                 <div class="relative flex justify-center">
 
-                    {{-- MAIN CARD --}}
-                    <div class="relative bg-white rounded-[40px] shadow-2xl p-8 w-full max-w-lg border border-gray-100">
-
-                        <img
-                            src="{{ asset('images/mockup-kemasan.png') }}"
-                            alt="Mockup Kemasan"
-                            class="w-full rounded-3xl"
-                        >
-
                         {{-- FLOATING CARD --}}
-                        <div class="absolute -bottom-6 -left-6 bg-white rounded-3xl shadow-xl p-5 w-60 border border-gray-100">
+                        <div class="relative w-full max-w-lg mx-auto">
+    
+                            <img 
+                                src="{{ asset('images/mockup.png') }}" 
+                                alt="Gambar Kemasan" 
+                                class="w-full h-auto rounded-3xl shadow-md"
+                            />
 
-                            <div class="flex items-center gap-4">
-
-                                <div class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center">
-
-                                    ✨
-
+                            <div class="absolute -bottom-6 -left-6 bg-white rounded-3xl shadow-xl p-5 w-60 border border-gray-100 z-10">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center">
+                                        ✨
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-gray-800">
+                                            AI Recommendation
+                                        </h3>
+                                        <p class="text-sm text-gray-500">
+                                            Warna & desain otomatis
+                                        </p>
+                                    </div>
                                 </div>
-
-                                <div>
-                                    <h3 class="font-bold text-gray-800">
-                                        AI Recommendation
-                                    </h3>
-
-                                    <p class="text-sm text-gray-500">
-                                        Warna & desain otomatis
-                                    </p>
-                                </div>
-
                             </div>
-
-                        </div>
-
-                        {{-- FLOATING --}}
-                        <div class="absolute -top-6 -right-6 bg-[#2f6d46] text-white px-6 py-4 rounded-3xl shadow-xl">
-
-                            <p class="text-sm">
-                                Smart Branding
-                            </p>
-
-                            <h3 class="text-xl font-bold">
-                                Packaging AI
-                            </h3>
 
                         </div>
 
