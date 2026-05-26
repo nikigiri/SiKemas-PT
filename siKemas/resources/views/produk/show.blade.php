@@ -10,8 +10,6 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
 
                 <div class="flex gap-6 mb-6 pb-6 border-b border-gray-200">
-
-                    <!-- Logo Produk -->
                     @if ($produk->gambar_logo)
                         <img src="{{ asset('storage/' . $produk->gambar_logo) }}"
                              alt="{{ $produk->nama_produk }}"
@@ -22,7 +20,6 @@
                         </div>
                     @endif
 
-                    <!-- Info Produk -->
                     <div class="flex-1">
                         <span class="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded-full">
                             {{ $produk->kategori_produk }}
@@ -39,7 +36,6 @@
                         </p>
                     </div>
 
-                    <!-- Tombol Edit -->
                     <div>
                         <a href="{{ route('produk.edit', $produk->id) }}"
                            class="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 text-sm">
@@ -48,7 +44,6 @@
                     </div>
                 </div>
 
-                <!-- Riwayat Desain untuk Produk Ini -->
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="font-semibold text-gray-700">Desain Kemasan</h4>
@@ -67,7 +62,6 @@
                             @foreach ($produk->desains as $desain)
                                 <a href="{{ route('desain.show', $desain->id) }}"
                                    class="block border border-gray-200 rounded-lg p-4 hover:border-indigo-400 hover:shadow-sm transition">
-                                    <!-- Palet Warna Mini -->
                                     <div class="flex rounded overflow-hidden h-4 mb-3">
                                         <div class="flex-1" style="background-color: {{ $desain->paletWarna->warna_utama }}"></div>
                                         <div class="flex-1" style="background-color: {{ $desain->paletWarna->warna_sekunder }}"></div>
@@ -93,11 +87,10 @@
                     @endif
                 </div>
 
-                <!-- Tombol Kembali & Hapus -->
                 <div class="flex justify-between mt-6 pt-6 border-t border-gray-200">
                     <a href="{{ route('produk.index') }}"
                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                        ← Kembali
+                        &larr; Kembali
                     </a>
 
                     <form method="POST" action="{{ route('produk.destroy', $produk->id) }}"

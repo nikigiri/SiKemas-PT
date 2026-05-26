@@ -16,7 +16,6 @@
 
             <div class="bg-white rounded-lg shadow-sm p-6">
 
-                <!-- Info Produk -->
                 <div class="flex gap-6 mb-6 pb-6 border-b border-gray-200">
                     @if ($desain->produk->gambar_logo)
                         <img src="{{ asset('storage/' . $desain->produk->gambar_logo) }}"
@@ -38,10 +37,8 @@
                     </div>
                 </div>
 
-                <!-- Detail Kemasan & Warna -->
                 <div class="grid grid-cols-2 gap-6 mb-6">
 
-                    <!-- Jenis Kemasan -->
                     <div class="border border-gray-200 rounded-lg p-4">
                         <h4 class="font-semibold text-gray-700 mb-2">Jenis Kemasan</h4>
                         <div class="flex items-center gap-3">
@@ -55,7 +52,6 @@
                         </div>
                     </div>
 
-                    <!-- Palet Warna -->
                     <div class="border border-gray-200 rounded-lg p-4">
                         <h4 class="font-semibold text-gray-700 mb-2">Palet Warna</h4>
                         <p class="text-sm text-gray-600 mb-2">{{ $desain->paletWarna->nama_palet }}</p>
@@ -75,26 +71,26 @@
                     </div>
                 </div>
 
-                <!-- Hasil AI (placeholder dulu) -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-6">
-                    <h4 class="font-semibold text-gray-700 mb-2">✨ Rekomendasi Desain AI</h4>
-                    @if ($desain->teks_ai)
-                        <p class="text-sm text-gray-700 whitespace-pre-line">{{ $desain->teks_ai }}</p>
+                <div class="border border-emerald-200 bg-emerald-50 rounded-lg p-6 mb-6">
+                    <h4 class="font-semibold text-emerald-800 mb-4">✨ Rekomendasi Desain AI</h4>
+                    @if ($desain->hasil_ai)
+                        <div class="prose prose-emerald max-w-none text-sm text-gray-800 leading-relaxed">
+                            {!! Str::markdown($desain->hasil_ai) !!}
+                        </div>
                     @else
                         <p class="text-sm text-gray-400 italic">Belum ada hasil generate AI. Fitur ini akan segera tersedia.</p>
                     @endif
                 </div>
 
-                <!-- Tombol Aksi -->
                 <div class="flex justify-between">
                     <a href="{{ route('produk.index') }}"
-                    class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                        ← Kembali ke Produk
+                       class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        &larr; Kembali ke Produk
                     </a>
 
                     <div class="flex gap-3">
                         <a href="{{ route('produk.pilih-kemasan', $desain->produk_id) }}"
-                        class="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50">
+                           class="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50">
                             🔄 Ulangi
                         </a>
 

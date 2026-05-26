@@ -23,25 +23,20 @@ class DesainController extends Controller
 
     public function store(Request $request)
     {
+        // 1. Validasi Input
         $request->validate([
             'produk_id'        => ['required', 'exists:produks,id'],
             'jenis_kemasan_id' => ['required', 'exists:jenis_kemasans,id'],
             'palet_warna_id'   => ['required', 'exists:palet_warnas,id'],
-            'instruksi_ai'     => ['nullable', 'string'],
+            'instruksi_ai'     => ['nullable', 'string'], 
         ]);
 
+        // 2. Tarik data relasi untuk bahan prompt
         $produk = Produk::where('user_id', Auth::id())->findOrFail($request->produk_id);
         $jenisKemasan = JenisKemasan::findOrFail($request->jenis_kemasan_id);
         $paletWarna = PaletWarna::findOrFail($request->palet_warna_id);
 
-        $desain = Desain::create([
-            'produk_id'        => $produk->id,
-            'jenis_kemasan_id' => $request->jenis_kemasan_id,
-            'palet_warna_id'   => $request->palet_warna_id,
-            'judul_desain'     => $produk->nama_produk,
-            'status_desain'    => 'draft',
-        ]);
-
+        // 3. Siapkan Prompt untuk Gemini
         $prompt = "Kamu adalah asisten desainer kemasan AI. Buatkan ide konsep desain kemasan yang detail untuk produk UMKM. "
                 . "Nama Produk: {$produk->nama_produk}. "
                 . "Bentuk Kemasan: {$jenisKemasan->nama_kemasan}. " 
@@ -49,9 +44,10 @@ class DesainController extends Controller
                 . "Instruksi/Gaya Visual Tambahan: {$request->instruksi_ai}. "
                 . "Berikan rekomendasi material yang cocok, elemen grafis yang harus ada, dan kesan dari desain tersebut.";
 
+        // 4. Eksekusi API Gemini
         $apiKey = config('services.gemini.api_key');
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={$apiKey}";        
-        
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";
+
         try {
             $response = Http::withoutVerifying()->withHeaders([
                 'Content-Type' => 'application/json'
@@ -65,24 +61,32 @@ class DesainController extends Controller
                 ]
             ]);
 
+            // 5. Simpan Hasilnya
             if ($response->successful()) {
                 $result = $response->json();
                 $generatedText = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
 
                 if ($generatedText) {
-                    $desain->update([
-                        'status_desain' => 'generated',
-                        'hasil_ai'      => $generatedText 
+                    // Buat record desain baru HANYA JIKA AI sukses menjawab
+                    $desain = Desain::create([
+                        'produk_id'        => $produk->id,
+                        'jenis_kemasan_id' => $request->jenis_kemasan_id,
+                        'palet_warna_id'   => $request->palet_warna_id,
+                        'judul_desain'     => $produk->nama_produk,
+                        'status_desain'    => 'generated',
+                        'hasil_ai'         => $generatedText 
                     ]);
 
-                    return redirect()->route('desain.show', $desain->id)->with('success', 'Ide kemasan berhasil dibuat!');
+                    // Pindah ke halaman hasil desain!
+                    return redirect()->route('desain.show', $desain->id)->with('success', 'Ide kemasan berhasil diracik!');
                 }
             }
 
-            return redirect()->route('desain.show', $desain->id)->with('error', 'Gagal memproses hasil dari AI. Coba lagi nanti.');
+            // Jika API gagal membalas teks yang benar
+            return back()->with('error', 'Gagal memproses hasil dari AI. Coba klik lagi.');
 
         } catch (\Exception $e) {
-            return redirect()->route('desain.show', $desain->id)->with('error', 'Koneksi terputus: ' . $e->getMessage());
+            return back()->with('error', 'Koneksi terputus: ' . $e->getMessage());
         }
     }
 
@@ -130,9 +134,9 @@ class DesainController extends Controller
                     . "- Instruksi Spesifik: {$userPrompt}\n\n"
                     . "Jelaskan dengan format poin-poin yang singkat dan menarik.";
 
-        // 4. Panggil API Gemini
+        // 4. Panggil API Gemini dengan model versi terbaru yang aktif (Gemini 2.5 Flash)
         $apiKey = config('services.gemini.api_key');
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}";
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";
 
         try {
             $response = Http::withoutVerifying()->post($url, [

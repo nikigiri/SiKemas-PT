@@ -16,7 +16,7 @@ class Desain extends Model
         'judul_desain',
         'status_desain',
         'preview_file',
-        'teks_ai',
+        'hasil_ai',
     ];
 
     // Relasi ke Produk
