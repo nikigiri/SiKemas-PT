@@ -23,7 +23,7 @@
 
                 <div>
                     <h2 class="text-3xl font-bold text-gray-800">
-                        Create Admin 👨‍💼
+                        Create Admin 
                     </h2>
 
                     <p class="text-sm text-gray-500 mt-1">
@@ -76,9 +76,10 @@
 
                             <div class="relative">
 
-                                <span
-                                    class="absolute left-4 top-3.5 text-gray-400 text-lg">
-                                    👤
+                                <span class="absolute left-4 top-3.5 text-gray-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                    </svg>
                                 </span>
 
                                 <x-text-input id="name"
@@ -106,9 +107,10 @@
 
                             <div class="relative">
 
-                                <span
-                                    class="absolute left-4 top-3.5 text-gray-400 text-lg">
-                                    📧
+                                <span class="absolute left-4 top-3.5 text-gray-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                                    </svg>
                                 </span>
 
                                 <x-text-input id="email"
@@ -135,9 +137,10 @@
 
                             <div class="relative">
 
-                                <span
-                                    class="absolute left-4 top-3.5 text-gray-400 text-lg">
-                                    🔒
+                                <span class="absolute left-4 top-3.5 text-gray-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                    </svg>
                                 </span>
 
                                 <x-text-input id="password"
@@ -163,9 +166,10 @@
 
                             <div class="relative">
 
-                                <span
-                                    class="absolute left-4 top-3.5 text-gray-400 text-lg">
-                                    🔐
+                                <span class="absolute left-4 top-3.5 text-gray-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                                    </svg>
                                 </span>
 
                                 <x-text-input id="password_confirmation"
@@ -185,16 +189,22 @@
 
                             <!-- Back -->
                             <a href="{{ route('admin.dashboard') }}"
-                                class="px-6 py-3 rounded-2xl border border-gray-200 text-gray-700 hover:bg-gray-100 transition text-center font-medium">
+                                class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-gray-200 text-gray-700 hover:bg-gray-100 transition text-center font-medium">
 
-                                ← Kembali
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                                </svg>
+                                Kembali
                             </a>
 
                             <!-- Submit -->
                             <button type="submit"
-                                class="px-6 py-3 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:scale-[1.02] transition">
+                                class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-2xl hover:scale-[1.02] transition">
 
-                                + Tambah Admin
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                                </svg>
+                                Tambah Admin
                             </button>
 
                         </div>

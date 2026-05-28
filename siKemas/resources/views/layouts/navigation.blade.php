@@ -9,7 +9,7 @@
             <div class="flex items-center gap-10">
 
                 {{-- LOGO --}}
-                <a href="{{ route('dashboard') }}"
+                <a href="{{ Auth::user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}"
                    class="flex items-center shrink-0">
 
                     <img src="{{ asset('images/logo.png') }}"
@@ -18,35 +18,42 @@
 
                 </a>
 
+                {{-- ADMIN BADGE (hanya muncul di navbar admin) --}}
+                @if(Auth::user()->hasRole('admin'))
+                    <span class="hidden sm:inline-flex items-center gap-1.5
+                                 px-3 py-1 rounded-full text-xs font-semibold
+                                 bg-slate-800 text-white">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+                        </svg>
+                        Admin Panel
+                    </span>
+                @endif
+
             </div>
 
             {{-- RIGHT SIDE --}}
             <div class="hidden sm:flex items-center gap-4 ml-auto">
 
-                {{-- SEARCH --}}
+                {{-- SEARCH — hanya untuk user biasa --}}
+                @unless(Auth::user()->hasRole('admin'))
                 <div class="w-[380px]">
-
                     <div class="relative w-full">
 
-                        {{-- ICON --}}
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-
                             <svg class="h-4 w-4 text-gray-400"
                                  xmlns="http://www.w3.org/2000/svg"
                                  fill="none"
                                  viewBox="0 0 24 24"
                                  stroke-width="2"
                                  stroke="currentColor">
-
                                 <path stroke-linecap="round"
                                       stroke-linejoin="round"
                                       d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
-
                             </svg>
-
                         </div>
 
-                        {{-- INPUT --}}
                         <input
                             type="text"
                             placeholder="Cari desain atau produk..."
@@ -63,8 +70,8 @@
                         />
 
                     </div>
-
                 </div>
+                @endunless
 
                 {{-- USER DROPDOWN --}}
                 <div class="relative"
@@ -76,39 +83,35 @@
                         @click="dropdownOpen = !dropdownOpen"
                         class="flex items-center gap-3
                                pl-3 pr-2 py-2
-                               rounded-2xl border border-gray-200
-                               hover:border-indigo-300
-                               hover:shadow-md
+                               rounded-2xl border
+                               {{ Auth::user()->hasRole('admin') ? 'border-slate-200 hover:border-slate-400 hover:shadow-md' : 'border-gray-200 hover:border-indigo-300 hover:shadow-md' }}
                                transition duration-200 bg-white"
                     >
 
                         {{-- TEXT --}}
                         <div class="flex flex-col items-end leading-tight">
-
                             <span class="text-sm font-semibold text-gray-800">
                                 {{ Auth::user()->name }}
                             </span>
-
+                            @if(Auth::user()->hasRole('admin'))
+                                <span class="text-[10px] text-slate-400 font-medium">Administrator</span>
+                            @endif
                         </div>
 
                         {{-- AVATAR --}}
-                        <div class="w-10 h-10 rounded-full bg-indigo-100
+                        <div class="w-10 h-10 rounded-full
+                                    {{ Auth::user()->hasRole('admin') ? 'bg-slate-800' : 'bg-indigo-100' }}
                                     flex items-center justify-center overflow-hidden shrink-0">
 
                             @if(Auth::user()->profile_photo_url)
-
                                 <img src="{{ Auth::user()->profile_photo_url }}"
                                      alt="{{ Auth::user()->name }}"
                                      class="w-full h-full object-cover">
-
                             @else
-
-                                <span class="text-sm font-bold text-indigo-600">
-
+                                <span class="text-sm font-bold
+                                             {{ Auth::user()->hasRole('admin') ? 'text-white' : 'text-indigo-600' }}">
                                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-
                                 </span>
-
                             @endif
 
                         </div>
@@ -121,11 +124,9 @@
                              viewBox="0 0 24 24"
                              stroke-width="2.5"
                              stroke="currentColor">
-
                             <path stroke-linecap="round"
                                   stroke-linejoin="round"
                                   d="M19 9l-7 7-7-7"/>
-
                         </svg>
 
                     </button>
@@ -142,77 +143,97 @@
                         style="display: none;"
                         class="absolute right-0 mt-3 w-56
                                bg-white border border-gray-100
-                               rounded-3xl shadow-2xl
-                               shadow-gray-200/50
+                               rounded-3xl shadow-2xl shadow-gray-200/50
                                overflow-hidden z-50"
                     >
 
                         {{-- HEADER --}}
-                        <div class="px-5 py-4 bg-gray-50 border-b border-gray-100">
+                        <div class="px-5 py-4 border-b border-gray-100
+                                    {{ Auth::user()->hasRole('admin') ? 'bg-slate-800' : 'bg-gray-50' }}">
 
-                            <p class="text-sm font-semibold text-gray-900 truncate">
+                            <p class="text-sm font-semibold truncate
+                                      {{ Auth::user()->hasRole('admin') ? 'text-white' : 'text-gray-900' }}">
                                 {{ Auth::user()->name }}
                             </p>
 
-                            <p class="text-xs text-gray-500 truncate mt-1">
+                            <p class="text-xs truncate mt-1
+                                      {{ Auth::user()->hasRole('admin') ? 'text-slate-300' : 'text-gray-500' }}">
                                 {{ Auth::user()->email }}
                             </p>
+
+                            @if(Auth::user()->hasRole('admin'))
+                                <span class="inline-flex items-center gap-1 mt-2
+                                             px-2 py-0.5 rounded-full
+                                             bg-white/20 text-white text-[10px] font-semibold">
+                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+                                    </svg>
+                                    Administrator
+                                </span>
+                            @endif
 
                         </div>
 
                         {{-- MENU --}}
                         <div class="p-2">
 
-                            {{-- PROFILE --}}
-                            <a href="{{ route('profile.edit') }}"
-                               class="flex items-center gap-3
-                                      px-4 py-3 rounded-2xl
-                                      text-sm font-medium text-gray-700
-                                      hover:bg-gray-100
-                                      transition duration-150">
-
-                                <svg class="w-5 h-5 text-gray-400"
-                                     xmlns="http://www.w3.org/2000/svg"
-                                     fill="none"
-                                     viewBox="0 0 24 24"
-                                     stroke-width="2"
-                                     stroke="currentColor">
-
-                                    <path stroke-linecap="round"
-                                          stroke-linejoin="round"
-                                          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
-
-                                </svg>
-
-                                Profil Saya
-
-                            </a>
-
-                            {{-- ADMIN --}}
                             @if(Auth::user()->hasRole('admin'))
 
+                                {{-- MENU KHUSUS ADMIN --}}
                                 <a href="{{ route('admin.dashboard') }}"
                                    class="flex items-center gap-3
                                           px-4 py-3 rounded-2xl
                                           text-sm font-medium text-gray-700
-                                          hover:bg-gray-100
-                                          transition duration-150">
-
-                                    <svg class="w-5 h-5 text-gray-400"
-                                         xmlns="http://www.w3.org/2000/svg"
-                                         fill="none"
-                                         viewBox="0 0 24 24"
-                                         stroke-width="2"
-                                         stroke="currentColor">
-
-                                        <path stroke-linecap="round"
-                                              stroke-linejoin="round"
-                                              d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6z"/>
-
+                                          hover:bg-slate-50 transition duration-150">
+                                    <svg class="w-5 h-5 text-slate-500"
+                                         fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25zM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25z"/>
                                     </svg>
+                                    Dashboard Admin
+                                </a>
 
-                                    Admin Panel
+                                <a href="{{ route('admin.user.index') }}"
+                                   class="flex items-center gap-3
+                                          px-4 py-3 rounded-2xl
+                                          text-sm font-medium text-gray-700
+                                          hover:bg-slate-50 transition duration-150">
+                                    <svg class="w-5 h-5 text-slate-500"
+                                         fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/>
+                                    </svg>
+                                    Kelola User
+                                </a>
 
+                            @else
+
+                                {{-- MENU KHUSUS USER --}}
+                                <a href="{{ route('profile.edit') }}"
+                                   class="flex items-center gap-3
+                                          px-4 py-3 rounded-2xl
+                                          text-sm font-medium text-gray-700
+                                          hover:bg-gray-100 transition duration-150">
+                                    <svg class="w-5 h-5 text-gray-400"
+                                         fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+                                    </svg>
+                                    Profil Saya
+                                </a>
+
+                                <a href="{{ route('desain.index') }}"
+                                   class="flex items-center gap-3
+                                          px-4 py-3 rounded-2xl
+                                          text-sm font-medium text-gray-700
+                                          hover:bg-gray-100 transition duration-150">
+                                    <svg class="w-5 h-5 text-gray-400"
+                                         fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M2.25 15.75l5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3 21h18M6.75 6.75h.008v.008H6.75V6.75Z"/>
+                                    </svg>
+                                    Desain Saya
                                 </a>
 
                             @endif
@@ -223,7 +244,6 @@
                             {{-- LOGOUT --}}
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-
                                 <button type="submit"
                                         class="flex items-center gap-3
                                                w-full px-4 py-3
@@ -231,24 +251,13 @@
                                                font-medium text-red-500
                                                hover:bg-red-50
                                                transition duration-150">
-
                                     <svg class="w-5 h-5"
-                                         xmlns="http://www.w3.org/2000/svg"
-                                         fill="none"
-                                         viewBox="0 0 24 24"
-                                         stroke-width="2"
-                                         stroke="currentColor">
-
-                                        <path stroke-linecap="round"
-                                              stroke-linejoin="round"
+                                         fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
                                               d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15"/>
-
                                     </svg>
-
                                     Keluar
-
                                 </button>
-
                             </form>
 
                         </div>
@@ -261,43 +270,19 @@
 
             {{-- MOBILE BUTTON --}}
             <div class="flex sm:hidden ml-auto">
-
                 <button
                     @click="open = !open"
-                    class="p-2 rounded-2xl border border-gray-200
-                           text-gray-500 hover:text-indigo-600
-                           hover:border-indigo-300 transition duration-200"
+                    class="p-2 rounded-2xl border
+                           {{ Auth::user()->hasRole('admin') ? 'border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-400' : 'border-gray-200 text-gray-500 hover:text-indigo-600 hover:border-indigo-300' }}
+                           transition duration-200"
                 >
-
-                    <svg x-show="!open"
-                         class="w-5 h-5"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke-width="2"
-                         stroke="currentColor">
-
-                        <path stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M4 6h16M4 12h16M4 18h16"/>
-
+                    <svg x-show="!open" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
-
-                    <svg x-show="open"
-                         style="display:none"
-                         class="w-5 h-5"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke-width="2"
-                         stroke="currentColor">
-
-                        <path stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M6 18L18 6M6 6l12 12"/>
-
+                    <svg x-show="open" style="display:none" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
-
                 </button>
-
             </div>
 
         </div>
