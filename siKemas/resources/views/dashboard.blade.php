@@ -2,321 +2,175 @@
 
 <x-app-layout>
 
-    {{-- Main Content --}}
-    <div class="relative z-10 p-6 md:p-8 max-w-7xl mx-auto mt-4">
+    <div class="min-h-screen bg-gray-50">
 
-        {{-- BANNER --}}
-        <div class="relative overflow-hidden bg-white rounded-[32px] mb-10 shadow-xl border border-gray-100 p-8 lg:p-12">
-            
-            {{-- DECORATION --}}
-            <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-green-100 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+        {{-- ═══════════════════════════════════════
+             HERO SECTION — full width, no card
+        ════════════════════════════════════════ --}}
+        <div class="relative overflow-hidden bg-white border-b border-gray-100">
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-12 lg:gap-16 relative z-10">
+            {{-- Decorative blobs --}}
+            <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-green-100 rounded-full blur-3xl opacity-30 pointer-events-none -translate-y-1/4 translate-x-1/4"></div>
+            <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-50 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
 
-                {{-- LEFT --}}
-                <div>
+            <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-16 lg:py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
 
-                    <div class="inline-flex items-center gap-2 bg-green-50 border border-green-100 text-[#2f6d46] px-4 py-2 rounded-full text-sm font-semibold mb-6">
-                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                        AI Powered Packaging Design
+                    {{-- LEFT --}}
+                    <div class="text-left">
+                        <div class="inline-flex items-center gap-2 bg-green-50 border border-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            AI Powered Packaging Design
+                        </div>
+
+                        <p class="text-xl font-semibold text-gray-500 mb-2">
+                            Hallo, {{ Auth::user()->name }}
+                        </p>
+
+                        <h1 class="text-4xl lg:text-5xl font-extrabold leading-tight text-gray-900 tracking-tight">
+                            Buat Desain
+                            <span class="text-[#2f6d46]">Kemasan Produk</span><br>
+                            Lebih Menarik dengan AI
+                        </h1>
+
+                        <p class="mt-5 text-base text-gray-500 leading-relaxed max-w-lg">
+                            SiKemas membantu UMKM menciptakan ide desain kemasan yang modern,
+                            menarik, dan sesuai branding bisnis hanya dalam hitungan detik.
+                        </p>
+
+                        {{-- CTA --}}
+                        <div class="mt-8">
+                            <a href="{{ route('produk.create') }}"
+                               class="inline-flex items-center gap-3 bg-[#2f6d46] hover:bg-[#245538]
+                                      text-white px-10 py-5 rounded-2xl font-bold text-lg
+                                      shadow-lg shadow-green-200 hover:scale-[1.02] transition duration-200">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Buat Produk
+                            </a>
+                        </div>
                     </div>
 
-                    {{-- SAPAAN USER --}}
-                    <h2 class="text-2xl md:text-3xl font-bold text-gray-700 mb-2">
-                        Hallo, {{ Auth::user()->name }} 👋
-                    </h2>
+                    {{-- RIGHT --}}
+                    <div class="relative flex justify-center lg:justify-end">
+                        <div class="relative w-full max-w-md">
+                            <img src="{{ asset('images/mockup.png') }}"
+                                 alt="Kemasan Produk"
+                                 class="w-full h-auto rounded-3xl shadow-xl relative z-10">
 
-                    <h1 class="text-4xl lg:text-5xl font-extrabold leading-tight text-gray-900">
-                        Buat Desain
-                        <span class="text-[#2f6d46]">
-                            Kemasan Produk
-                        </span><br>
-                        Lebih Menarik dengan AI
-                    </h1>
-
-                    <p class="mt-6 text-lg text-gray-600 leading-relaxed max-w-xl">
-                        SiKemas membantu UMKM menciptakan ide desain kemasan yang modern,
-                        menarik, dan sesuai branding bisnis hanya dalam hitungan detik.
-                    </p>
-
-                    {{-- BUTTON --}}
-                    <div class="mt-10 flex flex-wrap gap-4">
-                        <a href="{{ route('produk.create') }}"
-                           class="bg-gradient-to-r from-[#2f6d46] to-[#78b067]
-                                  text-white px-8 py-4 rounded-2xl
-                                  font-semibold shadow-xl shadow-green-200
-                                  hover:scale-105 transition duration-300">
-                            Mulai Sekarang
-                        </a>
-
-                        <a href="#produk-saya"
-                           class="border border-gray-300 px-8 py-4 rounded-2xl
-                                  font-semibold text-gray-700 hover:bg-gray-50 transition">
-                            Lihat Produk Saya
-                        </a>
-                    </div>
-
-                </div>
-
-                {{-- RIGHT --}}
-                <div class="relative flex justify-center lg:justify-end mt-10 lg:mt-0">
-
-                    {{-- FLOATING CARD --}}
-                    <div class="relative w-full max-w-md mx-auto lg:mr-4">
-                        
-                        <img 
-                            src="{{ asset('images/mockup.png') }}" 
-                            alt="Gambar Kemasan" 
-                            class="w-full h-auto rounded-3xl shadow-lg relative z-10"
-                        />
-
-                        <div class="absolute -bottom-6 -left-6 bg-white rounded-3xl shadow-xl p-5 w-60 border border-gray-100 z-20">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center text-xl">
-                                    ✨
+                            {{-- Floating badge --}}
+                            <div class="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-20 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+                                    </svg>
                                 </div>
                                 <div>
-                                    <h3 class="font-bold text-gray-800 text-sm">
-                                        AI Recommendation
-                                    </h3>
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        Warna & desain otomatis
-                                    </p>
+                                    <p class="text-sm font-bold text-gray-800">AI Recommendation</p>
+                                    <p class="text-xs text-gray-400">Warna & desain otomatis</p>
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                 </div>
-
             </div>
-
         </div>
 
-        {{-- Grid --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {{-- ═══════════════════════════════════════
+             PRODUK SAYA
+        ════════════════════════════════════════ --}}
+        <div class="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-10" id="produk-saya">
 
-            {{-- Create Product Card --}}
-            <a href="{{ route('produk.create') }}"
-               class="group relative overflow-hidden rounded-3xl bg-green-800 p-6 min-h-[190px]
-                      flex flex-col justify-between shadow-lg shadow-green-200
-                      hover:scale-[1.02] transition duration-300">
-
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full"></div>
-                <div class="absolute -bottom-12 -left-12 w-44 h-44 bg-white/5 rounded-full"></div>
-
-                <div class="relative z-10 w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                         stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-                    </svg>
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Produk Saya</h2>
+                    <p class="text-sm text-gray-400 mt-0.5">Kelola produk dan desain kemasan Anda</p>
                 </div>
-
-                <div class="relative z-10">
-                    <h2 class="text-xl font-bold text-white">Buat Produk Baru</h2>
-                    <p class="text-indigo-100 text-sm mt-1">Mulai desain kemasan produk baru</p>
-                </div>
-            </a>
-
-            {{-- Recent Designs --}}
-            @forelse (
-                \App\Models\Desain::whereHas('produk', fn($q) => $q->where('user_id', Auth::id()))
-                    ->latest()->take(5)->get()
-                as $desain
-            )
-                <a href="{{ route('desain.show', $desain->id) }}"
-                   class="group bg-white border border-gray-100 rounded-3xl overflow-hidden
-                          shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300">
-
-                    <div class="h-44 bg-gray-100 overflow-hidden relative">
-                        @if ($desain->thumbnail_url)
-                            <img src="{{ $desain->thumbnail_url }}"
-                                 alt="{{ $desain->nama }}"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                        @else
-                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
-                                <svg class="w-12 h-12 text-indigo-200" fill="none" stroke="currentColor"
-                                     stroke-width="1.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V7"/>
-                                </svg>
-                            </div>
-                        @endif
-
-                        @if ($desain->jenisKemasan)
-                            <span class="absolute top-3 right-3 text-[10px] uppercase tracking-wider
-                                         font-bold bg-white/90 px-3 py-1 rounded-full shadow">
-                                {{ $desain->jenisKemasan->nama }}
-                            </span>
-                        @endif
-                    </div>
-
-                    <div class="p-5">
-                        <h3 class="font-bold text-gray-800 text-base truncate">
-                            {{ $desain->nama ?? 'Desain Tanpa Nama' }}
-                        </h3>
-                        <p class="text-sm text-gray-400 mt-1 line-clamp-2">
-                            {{ $desain->deskripsi ?? 'Tidak ada deskripsi tersedia.' }}
-                        </p>
-                    </div>
-                </a>
-
-            @empty
-                <div class="col-span-1 sm:col-span-1 lg:col-span-2">
-                    <div class="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center bg-white h-full flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-5">
-                            <svg class="w-8 h-8 text-indigo-300" fill="none" stroke="green"
-                                 stroke-width="1.5" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V7"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-700">Belum ada desain</h3>
-                        <p class="text-sm text-gray-400 mt-2">
-                            Klik tombol "Buat Produk Baru" untuk memulai desain pertama Anda.
-                        </p>
-                    </div>
-                </div>
-            @endforelse
-
-        </div>
-
-        {{-- See All --}}
-        @if(\App\Models\Desain::whereHas('produk', fn($q) => $q->where('user_id', Auth::id()))->count() > 5)
-            <div class="mt-8 text-center">
-                <a href="{{ route('desain.index') }}"
-                   class="inline-flex items-center gap-2 text-indigo-600 font-semibold hover:underline">
-                    Lihat semua desain
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <a href="{{ route('produk.index') }}"
+                   class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#2f6d46] text-white text-sm font-semibold hover:bg-[#245538] transition">
+                    Lihat Semua
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
                 </a>
             </div>
-        @endif
 
-        <div class="mt-12" id="produk-saya">
+            @php
+                $produks = Auth::user()->produks()->with('desains')->latest()->take(6)->get();
+            @endphp
 
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900">
-                        Produk Saya
-                    </h2>
-                    <p class="text-sm text-gray-500">
-                        Kelola produk dan desain kemasan Anda
-                    </p>
+            @if($produks->isEmpty())
+
+                {{-- Empty state --}}
+                <div class="bg-white rounded-2xl border border-dashed border-gray-200 py-20 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-5">
+                        <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-700">Belum ada produk</h3>
+                    <p class="text-sm text-gray-400 mt-1 mb-6">Tambahkan produk pertama untuk mulai membuat desain kemasan.</p>
+                    <a href="{{ route('produk.create') }}"
+                       class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#2f6d46] text-white font-semibold hover:bg-[#245538] transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Buat Produk
+                    </a>
                 </div>
 
-                <a href="{{ route('produk.index') }}"
-                   class="px-5 py-2.5 rounded-xl bg-green-700 text-white font-medium hover:bg-green-800 transition">
-                    Lihat Semua
-                </a>
-            </div>
+            @else
 
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    @foreach($produks as $produk)
+                        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300 group">
 
-                @forelse($produks as $produk)
+                            {{-- Thumbnail --}}
+                            <div class="h-44 bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center relative overflow-hidden">
+                                @if($produk->gambar_logo)
+                                    <img src="{{ asset('storage/'.$produk->gambar_logo) }}"
+                                         class="w-28 h-28 object-contain group-hover:scale-105 transition duration-300">
+                                @else
+                                    <svg class="w-14 h-14 text-green-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
+                                    </svg>
+                                @endif
+                            </div>
 
-                    <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300">
-
-                        <div class="h-48 bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
-
-                            @if($produk->gambar_logo)
-
-                                <img
-                                    src="{{ asset('storage/'.$produk->gambar_logo) }}"
-                                    class="w-28 h-28 object-contain"
-                                >
-
-                            @else
-
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                     class="w-16 h-16 text-green-300"
-                                     fill="none"
-                                     viewBox="0 0 24 24"
-                                     stroke="currentColor">
-
-                                    <path stroke-linecap="round"
-                                          stroke-linejoin="round"
-                                          stroke-width="1.5"
-                                          d="M20 13V7a2 2 0 00-1-1.732l-6-3.333a2 2 0 00-2 0L5 5.268A2 2 0 004 7v6m16 0v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4m16 0H4"/>
-
-                                </svg>
-
-                            @endif
-
-                        </div>
-
-                        <div class="p-6">
-
-                            <div class="flex items-start justify-between">
-
-                                <div>
-                                    <h3 class="font-bold text-lg text-gray-900">
-                                        {{ $produk->nama_produk }}
-                                    </h3>
-
-                                    <p class="text-sm text-gray-500 mt-1">
-                                        {{ $produk->kategori_produk }}
-                                    </p>
+                            {{-- Content --}}
+                            <div class="p-5">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <h3 class="font-bold text-gray-900 truncate">{{ $produk->nama_produk }}</h3>
+                                        <p class="text-xs text-gray-400 mt-0.5">{{ $produk->kategori_produk }}</p>
+                                    </div>
+                                    <span class="shrink-0 bg-green-100 text-green-700 text-[11px] font-semibold px-2.5 py-1 rounded-full">
+                                        {{ $produk->desains->count() }} Desain
+                                    </span>
                                 </div>
 
-                                <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-                                    {{ $produk->desains->count() }} Desain
-                                </span>
+                                @if($produk->tagline)
+                                    <p class="text-sm text-gray-500 mt-3 line-clamp-2">{{ $produk->tagline }}</p>
+                                @endif
 
+                                <div class="flex gap-2.5 mt-5">
+                                    <a href="{{ route('produk.show', $produk->id) }}"
+                                       class="flex-1 text-center py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition">
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('produk.edit', $produk->id) }}"
+                                       class="flex-1 text-center py-2 rounded-xl bg-[#2f6d46] text-white text-sm font-medium hover:bg-[#245538] transition">
+                                        Edit
+                                    </a>
+                                </div>
                             </div>
-
-                            @if($produk->tagline)
-                                <p class="text-sm text-gray-600 mt-4 line-clamp-2">
-                                    {{ $produk->tagline }}
-                                </p>
-                            @endif
-
-                            <div class="flex gap-3 mt-6">
-
-                                <a href="{{ route('produk.show',$produk->id) }}"
-                                   class="flex-1 text-center py-2.5 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition">
-                                    Detail
-                                </a>
-
-                                <a href="{{ route('produk.edit',$produk->id) }}"
-                                   class="flex-1 text-center py-2.5 rounded-xl bg-green-700 text-white font-medium hover:bg-green-800 transition">
-                                    Edit
-                                </a>
-
-                            </div>
-
                         </div>
+                    @endforeach
+                </div>
 
-                    </div>
-
-                @empty
-
-                    <div class="col-span-full">
-
-                        <div class="bg-white rounded-3xl border-2 border-dashed border-gray-200 p-12 text-center">
-
-                            <h3 class="text-xl font-semibold text-gray-800">
-                                Belum Ada Produk
-                            </h3>
-
-                            <p class="text-gray-500 mt-2">
-                                Tambahkan produk pertama untuk mulai membuat desain kemasan.
-                            </p>
-
-                            <a href="{{ route('produk.create') }}"
-                               class="inline-flex mt-6 px-6 py-3 rounded-xl bg-green-700 text-white font-medium">
-                                Buat Produk
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                @endforelse
-
-            </div>
+            @endif
 
         </div>
 
