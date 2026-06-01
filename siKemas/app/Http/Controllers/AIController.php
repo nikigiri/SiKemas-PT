@@ -16,10 +16,10 @@ class AIController extends Controller
             ]);
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('services.openai.key'),
+                'Authorization' => 'Bearer ' . config('services.groq.api_key'), // ← ganti
                 'Content-Type' => 'application/json',
-            ])->post('https://api.openai.com/v1/chat/completions', [
-                'model' => 'gpt-4.1-mini',
+            ])->post('https://api.groq.com/openai/v1/chat/completions', [ // ← ganti
+                'model' => 'llama-3.3-70b-versatile', // ← ganti
                 'messages' => [
                     [
                         'role' => 'user',
@@ -31,7 +31,7 @@ class AIController extends Controller
 
             return response()->json([
                 'status' => true,
-                'openai_response' => $response->json(),
+                'result' => $response->json()['choices'][0]['message']['content'], // ambil teksnya langsung
             ]);
 
         } catch (\Exception $e) {
