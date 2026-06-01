@@ -13,7 +13,19 @@
                 <p class="text-gray-400 mt-1 text-sm">Sesuaikan jenis kemasan, palet warna, dan instruksi AI untuk produk kamu.</p>
             </div>
 
-            <form id="formGenerate" method="POST" action="{{ route('desain.store') }}">
+            {{-- Kotak Error --}}
+            @if (session('error'))
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium flex items-start gap-3">
+                    <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <div>{{ session('error') }}</div>
+                </div>
+            @endif
+
+            <form id="formGenerate" method="POST" action="{{ route('desain.store') }}" 
+                onsubmit="document.getElementById('loadingIndicator').classList.remove('hidden'); 
+                document.getElementById('btnSubmit').disabled = true; 
+                document.getElementById('btnSubmit').innerHTML = 'Memproses...';">
+
                 @csrf
                 <input type="hidden" name="produk_id" value="{{ $produk->id }}">
 
@@ -30,7 +42,7 @@
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                         @foreach ($jenisKemasans as $kemasan)
                             <label class="cursor-pointer group">
-                                <input type="radio" name="jenis_kemasan_id" value="{{ $kemasan->id }}" class="hidden peer" required>
+                                <input type="radio" name="jenis_kemasan_id" value="{{ $kemasan->id }}" class="hidden peer">
                                 <div class="border-2 border-gray-100 bg-gray-50 rounded-xl p-3 text-center
                                             transition-all duration-200
                                             peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:shadow-md peer-checked:shadow-emerald-100
@@ -61,7 +73,7 @@
                     <div class="flex flex-wrap gap-3">
                         @foreach ($paletWarnas as $palet)
                             <label class="cursor-pointer group">
-                                <input type="radio" name="palet_warna_id" value="{{ $palet->id }}" class="hidden peer" required>
+                                <input type="radio" name="palet_warna_id" value="{{ $palet->id }}" class="hidden peer">
                                 <div class="border-2 border-transparent rounded-xl p-1.5 transition-all duration-200
                                             peer-checked:border-emerald-500 peer-checked:shadow-md peer-checked:shadow-emerald-100
                                             hover:border-emerald-300">
@@ -90,7 +102,7 @@
 
                     <textarea
                         id="promptInput"
-                        name="prompt"
+                        name="instruksi_ai"
                         rows="4"
                         required
                         class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700
