@@ -140,7 +140,7 @@
                 <div id="resultArea" class="hidden mb-5"></div>
 
                 {{-- Actions --}}
-                <div class="flex items-center justify-between">
+                <!-- <div class="flex items-center justify-between">
                     <a href="{{ route('produk.create') }}"
                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600
                               hover:bg-gray-50 transition duration-150">
@@ -158,9 +158,46 @@
                         </svg>
                         Generate dengan AI
                     </button>
-                </div>
+                </div> -->
+
+               <form id="aiForm">
+                    @csrf
+                    <textarea name="prompt" id="prompt"></textarea>
+                    <button type="submit">
+                        Generate
+                    </button>
+                </form>
+                <div id="result"></div> 
 
             </form>
         </div>
     </div>
+
+    <script>
+        document.getElementById('aiForm')
+        .addEventListener('submit', async function(e) {
+
+            e.preventDefault();
+
+            const prompt =
+                document.getElementById('prompt').value;
+
+            const response = await fetch('/generate-ai', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    prompt: prompt
+                })
+            });
+
+            const data = await response.json();
+
+            document.getElementById('result').innerHTML =
+                data.choices[0].message.content;
+        });
+        </script>
 </x-app-layout>

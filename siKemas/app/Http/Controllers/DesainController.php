@@ -22,73 +22,103 @@ class DesainController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // 1. Validasi Input
-        $request->validate([
-            'produk_id'        => ['required', 'exists:produks,id'],
-            'jenis_kemasan_id' => ['required', 'exists:jenis_kemasans,id'],
-            'palet_warna_id'   => ['required', 'exists:palet_warnas,id'],
-            'instruksi_ai'     => ['nullable', 'string'], 
+{
+    $request->validate([
+        'produk_id'        => ['required', 'exists:produks,id'],
+        'jenis_kemasan_id' => ['required', 'exists:jenis_kemasans,id'],
+        'palet_warna_id'   => ['required', 'exists:palet_warnas,id'],
+        'instruksi_ai'     => ['nullable', 'string'],
+    ]);
+
+    $produk = Produk::where('user_id', Auth::id())
+        ->findOrFail($request->produk_id);
+
+    $jenisKemasan = JenisKemasan::findOrFail($request->jenis_kemasan_id);
+    $paletWarna = PaletWarna::findOrFail($request->palet_warna_id);
+
+    $prompt = "
+    Kamu adalah desainer kemasan profesional untuk produk UMKM.
+
+    Buatkan konsep desain kemasan yang detail berdasarkan informasi berikut:
+
+    Nama Produk: {$produk->nama_produk}
+    Jenis Kemasan: {$jenisKemasan->nama_kemasan}
+    Palet Warna: {$paletWarna->nama_warna}
+    Instruksi Tambahan: {$request->instruksi_ai}
+
+    Jelaskan:
+
+    1. Konsep utama desain
+    2. Warna dominan
+    3. Tipografi yang cocok
+    4. Elemen visual yang digunakan
+    5. Tata letak kemasan depan
+    6. Target market
+    7. Material kemasan yang direkomendasikan
+    8. Kesan yang ingin ditampilkan
+
+    Buat hasil yang profesional dan mudah dipahami.
+    ";
+
+    try {
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.openai.key'),
+            'Content-Type'  => 'application/json',
+        ])->post('https://api.openai.com/v1/chat/completions', [
+            'model' => 'gpt-4.1-mini',
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => 'Kamu adalah ahli desain kemasan dan branding produk.'
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $prompt
+                ]
+            ],
+            'max_tokens' => 800,
         ]);
 
-        // 2. Tarik data relasi untuk bahan prompt
-        $produk = Produk::where('user_id', Auth::id())->findOrFail($request->produk_id);
-        $jenisKemasan = JenisKemasan::findOrFail($request->jenis_kemasan_id);
-        $paletWarna = PaletWarna::findOrFail($request->palet_warna_id);
+        if (!$response->successful()) {
 
-        // 3. Siapkan Prompt untuk Gemini
-        $prompt = "Kamu adalah asisten desainer kemasan AI. Buatkan ide konsep desain kemasan yang detail untuk produk UMKM. "
-                . "Nama Produk: {$produk->nama_produk}. "
-                . "Bentuk Kemasan: {$jenisKemasan->nama_kemasan}. " 
-                . "Palet Warna Utama: {$paletWarna->nama_warna}. " 
-                . "Instruksi/Gaya Visual Tambahan: {$request->instruksi_ai}. "
-                . "Berikan rekomendasi material yang cocok, elemen grafis yang harus ada, dan kesan dari desain tersebut.";
-
-        // 4. Eksekusi API Gemini
-        $apiKey = config('services.gemini.api_key');
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";
-
-        try {
-            $response = Http::withoutVerifying()->withHeaders([
-                'Content-Type' => 'application/json'
-            ])->post($url, [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $prompt]
-                        ]
-                    ]
-                ]
-            ]);
-
-            // 5. Simpan Hasilnya
-            if ($response->successful()) {
-                $result = $response->json();
-                $generatedText = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
-
-                if ($generatedText) {
-                    // Buat record desain baru HANYA JIKA AI sukses menjawab
-                    $desain = Desain::create([
-                        'produk_id'        => $produk->id,
-                        'jenis_kemasan_id' => $request->jenis_kemasan_id,
-                        'palet_warna_id'   => $request->palet_warna_id,
-                        'judul_desain'     => $produk->nama_produk,
-                        'status_desain'    => 'generated',
-                        'hasil_ai'         => $generatedText 
-                    ]);
-
-                    // Pindah ke halaman hasil desain!
-                    return redirect()->route('desain.show', $desain->id)->with('success', 'Ide kemasan berhasil diracik!');
-                }
-            }
-
-            // Jika API gagal membalas teks yang benar
-            return back()->with('error', 'Gagal memproses hasil dari AI. Coba klik lagi.');
-
-        } catch (\Exception $e) {
-            return back()->with('error', 'Koneksi terputus: ' . $e->getMessage());
+            return back()->with(
+                'error',
+                'OpenAI Error: ' . $response->body()
+            );
         }
+
+        $generatedText =
+            $response->json()['choices'][0]['message']['content'] ?? null;
+
+        if (!$generatedText) {
+            return back()->with(
+                'error',
+                'AI tidak mengembalikan hasil.'
+            );
+        }
+
+        $desain = Desain::create([
+            'produk_id'        => $produk->id,
+            'jenis_kemasan_id' => $request->jenis_kemasan_id,
+            'palet_warna_id'   => $request->palet_warna_id,
+            'judul_desain'     => $produk->nama_produk,
+            'status_desain'    => 'generated',
+            'hasil_ai'         => $generatedText,
+        ]);
+
+        return redirect()
+            ->route('desain.show', $desain->id)
+            ->with('success', 'Ide kemasan berhasil dibuat!');
+
+    } catch (\Exception $e) {
+
+        return back()->with(
+            'error',
+            'Error: ' . $e->getMessage()
+        );
     }
+}
 
     public function show($id)
     {

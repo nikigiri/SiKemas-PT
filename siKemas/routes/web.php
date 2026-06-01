@@ -13,6 +13,9 @@ use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use App\Models\Produk;
+use App\Http\Controllers\AIController;
+
+Route::post('/generate-ai', [AIController::class, 'generate']);
 
 Route::get('/', function () {
     return view('welcome');
