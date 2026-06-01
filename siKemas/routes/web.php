@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
+use App\Models\Produk;
 
 Route::get('/', function () {
     return view('welcome');
@@ -56,15 +57,31 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])
 
 Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
     ->group(function () {
+
         Route::get('/dashboard', function () {
-            return view('dashboard');
+
+            $produks = Produk::where('user_id', auth()->id())
+                ->with('desains')
+                ->latest()
+                ->take(6)
+                ->get();
+
+            return view('dashboard', compact('produks'));
+
         })->name('dashboard');
 
         Route::resource('produk', ProdukController::class);
-        Route::get('/produk/{id}/pilih-kemasan', [ProdukController::class, 'pilihKemasan'])->name('produk.pilih-kemasan');
 
-        Route::resource('desain', DesainController::class)->only(['index', 'store', 'show', 'destroy']);
-        Route::post('/generate-ai', [DesainController::class, 'generateAjax'])->name('desain.generate-ajax');
+        Route::get('/produk/{id}/pilih-kemasan',
+            [ProdukController::class, 'pilihKemasan']
+        )->name('produk.pilih-kemasan');
+
+        Route::resource('desain', DesainController::class)
+            ->only(['index', 'store', 'show', 'destroy']);
+
+        Route::post('/generate-ai',
+            [DesainController::class, 'generateAjax']
+        )->name('desain.generate-ajax');
     });
 
 Route::middleware(['auth'])->group(function () {

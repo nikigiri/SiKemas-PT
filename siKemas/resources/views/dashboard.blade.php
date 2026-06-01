@@ -151,6 +151,131 @@
             </div>
         @endif
 
+        <div class="mt-12">
+
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">
+                Produk Saya
+            </h2>
+            <p class="text-sm text-gray-500">
+                Kelola produk dan desain kemasan Anda
+            </p>
+        </div>
+
+        <a href="{{ route('produk.index') }}"
+           class="px-5 py-2.5 rounded-xl bg-green-700 text-white font-medium hover:bg-green-800 transition">
+            Lihat Semua
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        @forelse($produks as $produk)
+
+            <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300">
+
+                <div class="h-48 bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+
+                    @if($produk->gambar_logo)
+
+                        <img
+                            src="{{ asset('storage/'.$produk->gambar_logo) }}"
+                            class="w-28 h-28 object-contain"
+                        >
+
+                    @else
+
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-16 h-16 text-green-300"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="1.5"
+                                  d="M20 13V7a2 2 0 00-1-1.732l-6-3.333a2 2 0 00-2 0L5 5.268A2 2 0 004 7v6m16 0v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4m16 0H4"/>
+
+                        </svg>
+
+                    @endif
+
+                </div>
+
+                <div class="p-6">
+
+                    <div class="flex items-start justify-between">
+
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-900">
+                                {{ $produk->nama_produk }}
+                            </h3>
+
+                            <p class="text-sm text-gray-500 mt-1">
+                                {{ $produk->kategori_produk }}
+                            </p>
+                        </div>
+
+                        <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
+                            {{ $produk->desains->count() }} Desain
+                        </span>
+
+                    </div>
+
+                    @if($produk->tagline)
+                        <p class="text-sm text-gray-600 mt-4 line-clamp-2">
+                            {{ $produk->tagline }}
+                        </p>
+                    @endif
+
+                    <div class="flex gap-3 mt-6">
+
+                        <a href="{{ route('produk.show',$produk->id) }}"
+                           class="flex-1 text-center py-2.5 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition">
+                            Detail
+                        </a>
+
+                        <a href="{{ route('produk.edit',$produk->id) }}"
+                           class="flex-1 text-center py-2.5 rounded-xl bg-green-700 text-white font-medium hover:bg-green-800 transition">
+                            Edit
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        @empty
+
+            <div class="col-span-full">
+
+                <div class="bg-white rounded-3xl border-2 border-dashed border-gray-200 p-12 text-center">
+
+                    <h3 class="text-xl font-semibold text-gray-800">
+                        Belum Ada Produk
+                    </h3>
+
+                    <p class="text-gray-500 mt-2">
+                        Tambahkan produk pertama untuk mulai membuat desain kemasan.
+                    </p>
+
+                    <a href="{{ route('produk.create') }}"
+                       class="inline-flex mt-6 px-6 py-3 rounded-xl bg-green-700 text-white font-medium">
+                        Buat Produk
+                    </a>
+
+                </div>
+
+            </div>
+
+        @endforelse
+
+    </div>
+
+</div>
+
     </div>
 
 </x-app-layout>
