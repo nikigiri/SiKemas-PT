@@ -78,7 +78,9 @@
                         <img src="{{ asset('images/mockup-pouch.png') }}" 
                              class="absolute inset-0 w-full h-full object-contain z-10 drop-shadow-xl" 
                              alt="Mockup Kemasan"
-                             onerror="this.src='https://via.placeholder.com/400x500/ffffff/cccccc?text=Mockup+Pouch+Polos'"> <div class="relative z-20 flex flex-col items-center justify-center w-[60%] h-[50%] mt-8 rounded-xl p-4 shadow-lg backdrop-blur-sm"
+                             onerror="this.src='https://via.placeholder.com/400x500/ffffff/cccccc?text=Mockup+Pouch+Polos'"> 
+                             
+                        <div class="relative z-20 flex flex-col items-center justify-center w-[60%] h-[50%] mt-8 rounded-xl p-4 shadow-lg backdrop-blur-sm"
                              style="background-color: {{ $desain->paletWarna->warna_utama }}; border-bottom: 8px solid {{ $desain->paletWarna->warna_sekunder }};">
                             
                             @if ($desain->produk->gambar_logo)
@@ -100,6 +102,7 @@
                     
                     <p class="text-xs text-gray-400 mt-4 italic">Preview digenerate berdasarkan palet warna pilihanmu.</p>
                 </div>
+
                 <div class="border border-emerald-200 bg-emerald-50 rounded-lg p-6 mb-6">
                     <h4 class="font-semibold text-emerald-800 mb-4">✨ Rekomendasi Konsep AI</h4>
                     @if ($desain->hasil_ai)
@@ -113,20 +116,25 @@
 
                 <div class="flex justify-between mt-8 pt-4 border-t border-gray-100">
                     <a href="{{ route('produk.index') }}"
-                       class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">
-                        &larr; Kembali ke Produk
+                       class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition flex items-center h-10">
+                        &larr; Kembali
                     </a>
 
                     <div class="flex gap-3">
                         <a href="{{ route('produk.pilih-kemasan', $desain->produk_id) }}"
-                           class="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition">
+                           class="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition flex items-center h-10">
                             🔄 Ulangi
                         </a>
 
                         <button id="btn-export" onclick="downloadDesain()"
-                                class="px-5 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition flex items-center gap-2 shadow-sm">
-                            💾 Export / Cetak
+                                class="px-4 py-2 bg-emerald-600 text-white font-medium rounded-md hover:bg-emerald-700 transition flex items-center gap-2 shadow-sm h-10">
+                            🖼️ Download Mockup
                         </button>
+
+                        <a href="{{ route('desain.export', $desain->id) }}"
+                           class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition flex items-center gap-2 shadow-sm h-10">
+                            📄 Cetak Detail AI
+                        </a>
                     </div>
                 </div>
             </div>

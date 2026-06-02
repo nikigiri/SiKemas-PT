@@ -4,16 +4,13 @@
 
     <div class="min-h-screen bg-gray-50">
 
-        {{-- ═══════════════════════════════════════
-             HERO SECTION — full width, no card
-        ════════════════════════════════════════ --}}
         <div class="relative overflow-hidden bg-white border-b border-gray-100">
 
             {{-- Decorative blobs --}}
             <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-green-100 rounded-full blur-3xl opacity-30 pointer-events-none -translate-y-1/4 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-50 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
 
-            <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-16 lg:py-20">
+            <div class="relative z-10 max-w-8xl mx-auto px-6 md:px-8 lg:px-12 py-16 lg:py-20">
                 <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
 
                     {{-- LEFT --}}
@@ -78,12 +75,10 @@
             </div>
         </div>
 
-        {{-- ═══════════════════════════════════════
-             PRODUK SAYA
-        ════════════════════════════════════════ --}}
+        {{--PRODUK SAYA--}}
         <div class="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-10" id="produk-saya">
 
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center justify-between mb-8">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900">Produk Saya</h2>
                     <p class="text-sm text-gray-400 mt-0.5">Kelola produk dan desain kemasan Anda</p>
@@ -124,21 +119,30 @@
             @else
 
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                    @foreach($produks as $produk)
-                        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300 group">
+                    @foreach($produks as $index => $produk)
+
+                        <div class="card-produk bg-white rounded-[22px] border border-gray-100
+                                    overflow-hidden shadow-sm"
+                             style="animation-delay: {{ 0.10 + ($index * 0.06) }}s">
 
                             {{-- Thumbnail --}}
-                            <div class="h-44 bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center relative overflow-hidden">
-                                @if($produk->gambar_logo)
-                                    <img src="{{ asset('storage/'.$produk->gambar_logo) }}"
-                                         class="w-28 h-28 object-contain group-hover:scale-105 transition duration-300">
-                                @else
-                                    <svg class="w-14 h-14 text-green-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
+                            @if ($produk->gambar_logo)
+                                <div class="h-44 overflow-hidden relative">
+                                    <img src="{{ asset('storage/' . $produk->gambar_logo) }}"
+                                         alt="{{ $produk->nama_produk }}"
+                                         class="w-full h-full object-cover
+                                                group-hover:scale-105 transition duration-500">
+                                </div>
+                            @else
+                                <div class="h-44 bg-gradient-to-br from-indigo-50 to-purple-50
+                                            flex items-center justify-center">
+                                    <svg class="w-12 h-12 text-indigo-200" fill="none" stroke="currentColor"
+                                         stroke-width="1.3" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V7"/>
                                     </svg>
-                                @endif
-                            </div>
-
+                                </div>
+                            @endif
                             {{-- Content --}}
                             <div class="p-5">
                                 <div class="flex items-start justify-between gap-2">
