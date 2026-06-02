@@ -13,9 +13,11 @@ use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use App\Models\Produk;
-use App\Http\Controllers\AIController;
 
-Route::post('/generate-ai', [AIController::class, 'generate']);
+// --- ROUTE OPENAI (DI-COMMENT UNTUK BACKUP DOSEN) ---
+// use App\Http\Controllers\AIController;
+// Route::post('/generate-ai', [AIController::class, 'generate']);
+// ----------------------------------------------------
 
 Route::get('/', function () {
     return view('welcome');
@@ -62,7 +64,6 @@ Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
     ->group(function () {
 
         Route::get('/dashboard', function () {
-
             $produks = Produk::where('user_id', auth()->id())
                 ->with('desains')
                 ->latest()
@@ -70,7 +71,6 @@ Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
                 ->get();
 
             return view('dashboard', compact('produks'));
-
         })->name('dashboard');
 
         Route::resource('produk', ProdukController::class);
@@ -82,9 +82,19 @@ Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
         Route::resource('desain', DesainController::class)
             ->only(['index', 'store', 'show', 'destroy']);
 
+        Route::get('/desain/{id}/export', [DesainController::class, 'exportPdf'])->name('desain.export');
+        
+        // --- ROUTE OPENAI LAMA  ---
+        // Route::post('/generate-ai',
+        //     [DesainController::class, 'generateAjax']
+        // )->name('desain.generate-ajax');
+        // --------------------------------------
+
+        // --- ROUTE GEMINI API ---
         Route::post('/generate-ai',
-            [DesainController::class, 'generateAjax']
-        )->name('desain.generate-ajax');
+            [DesainController::class, 'generateGemini']
+        )->name('desain.generate-gemini');
+        // -----------------------------------
     });
 
 Route::middleware(['auth'])->group(function () {

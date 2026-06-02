@@ -1,5 +1,4 @@
 <x-app-layout>
-
     <div class="min-h-screen bg-gray-50 py-10 px-4">
         <div class="max-w-4xl mx-auto">
 
@@ -7,7 +6,6 @@
             <div class="mb-8">
                 <a href="{{ route('produk.create') }}"
                    class="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition mb-4">
-        
                 </a>
                 <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Pilih Kemasan & Desain</h1>
                 <p class="text-gray-400 mt-1 text-sm">Sesuaikan jenis kemasan, palet warna, dan instruksi AI untuk produk kamu.</p>
@@ -21,11 +19,8 @@
                 </div>
             @endif
 
-            <form id="formGenerate" method="POST" action="{{ route('desain.store') }}" 
-                onsubmit="document.getElementById('loadingIndicator').classList.remove('hidden'); 
-                document.getElementById('btnSubmit').disabled = true; 
-                document.getElementById('btnSubmit').innerHTML = 'Memproses...';">
-
+            {{-- Form sekarang langsung diarahkan ke desain.store --}}
+            <form id="formGenerate" method="POST" action="{{ route('desain.store') }}" onsubmit="tampilkanLoading()">
                 @csrf
                 <input type="hidden" name="produk_id" value="{{ $produk->id }}">
 
@@ -42,7 +37,7 @@
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                         @foreach ($jenisKemasans as $kemasan)
                             <label class="cursor-pointer group">
-                                <input type="radio" name="jenis_kemasan_id" value="{{ $kemasan->id }}" class="hidden peer">
+                                <input type="radio" name="jenis_kemasan_id" value="{{ $kemasan->id }}" required class="hidden peer">
                                 <div class="border-2 border-gray-100 bg-gray-50 rounded-xl p-3 text-center
                                             transition-all duration-200
                                             peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:shadow-md peer-checked:shadow-emerald-100
@@ -57,7 +52,6 @@
                             </label>
                         @endforeach
                     </div>
-                    <x-input-error :messages="$errors->get('jenis_kemasan_id')" class="mt-2"/>
                 </div>
 
                 {{-- Step 2: Palet Warna --}}
@@ -73,7 +67,7 @@
                     <div class="flex flex-wrap gap-3">
                         @foreach ($paletWarnas as $palet)
                             <label class="cursor-pointer group">
-                                <input type="radio" name="palet_warna_id" value="{{ $palet->id }}" class="hidden peer">
+                                <input type="radio" name="palet_warna_id" value="{{ $palet->id }}" required class="hidden peer">
                                 <div class="border-2 border-transparent rounded-xl p-1.5 transition-all duration-200
                                             peer-checked:border-emerald-500 peer-checked:shadow-md peer-checked:shadow-emerald-100
                                             hover:border-emerald-300">
@@ -87,7 +81,6 @@
                             </label>
                         @endforeach
                     </div>
-                    <x-input-error :messages="$errors->get('palet_warna_id')" class="mt-2"/>
                 </div>
 
                 {{-- Step 3: Prompt AI --}}
@@ -130,17 +123,14 @@
                     </div>
                 </div>
 
-                {{-- Loading --}}
+                {{-- Loading Indicator --}}
                 <div id="loadingIndicator"
-                     class="hidden mb-5 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-700 text-sm text-center font-medium">
-                    <span class="animate-pulse">✨ Sedang meracik desain dengan AI... Mohon tunggu sebentar</span>
+                     class="hidden mb-5 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-700 text-sm text-center font-medium transition-all">
+                    <span class="animate-pulse">✨ Sedang meracik desain SiKemas dengan AI... Mohon tunggu sebentar</span>
                 </div>
 
-                {{-- Result --}}
-                <div id="resultArea" class="hidden mb-5"></div>
-
                 {{-- Actions --}}
-                <!-- <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between">
                     <a href="{{ route('produk.create') }}"
                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600
                               hover:bg-gray-50 transition duration-150">
@@ -153,51 +143,31 @@
                     <button id="btnSubmit" type="submit"
                             class="inline-flex items-center gap-2 px-7 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-semibold
                                    hover:bg-emerald-600 active:scale-95 transition duration-150 shadow-md shadow-emerald-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
-                        </svg>
-                        Generate dengan AI
+                        <span id="btnText" class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+                            </svg>
+                            Generate dengan AI
+                        </span>
                     </button>
-                </div> -->
-
-               <form id="aiForm">
-                    @csrf
-                    <textarea name="prompt" id="prompt"></textarea>
-                    <button type="submit">
-                        Generate
-                    </button>
-                </form>
-                <div id="result"></div> 
-
+                </div>
             </form>
         </div>
     </div>
 
+    {{-- Script ringan hanya untuk menampilkan animasi loading saat form disubmit --}}
     <script>
-        document.getElementById('aiForm')
-        .addEventListener('submit', async function(e) {
-
-            e.preventDefault();
-
-            const prompt =
-                document.getElementById('prompt').value;
-
-            const response = await fetch('/generate-ai', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN':
-                        document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    prompt: prompt
-                })
-            });
-
-            const data = await response.json();
-
-            document.getElementById('result').innerHTML =
-                data.choices[0].message.content;
-        });
-        </script>
+        function tampilkanLoading() {
+            // Tampilkan kotak loading
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            
+            // Nonaktifkan tombol agar user tidak klik 2 kali
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            
+            // Ubah teks tombol
+            document.getElementById('btnText').innerHTML = 'Meracik Desain...';
+        }
+    </script>
 </x-app-layout>

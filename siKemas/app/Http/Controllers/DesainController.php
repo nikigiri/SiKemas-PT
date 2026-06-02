@@ -22,103 +22,73 @@ class DesainController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'produk_id'        => ['required', 'exists:produks,id'],
-        'jenis_kemasan_id' => ['required', 'exists:jenis_kemasans,id'],
-        'palet_warna_id'   => ['required', 'exists:palet_warnas,id'],
-        'instruksi_ai'     => ['nullable', 'string'],
-    ]);
+    {
+        // 1. Validasi Input
+        $request->validate([
+            'produk_id'        => ['required', 'exists:produks,id'],
+            'jenis_kemasan_id' => ['required', 'exists:jenis_kemasans,id'],
+            'palet_warna_id'   => ['required', 'exists:palet_warnas,id'],
+            'instruksi_ai'     => ['nullable', 'string'], 
+        ]);
 
-    $produk = Produk::where('user_id', Auth::id())
-        ->findOrFail($request->produk_id);
+        // 2. Tarik data relasi untuk bahan prompt
+        $produk = Produk::where('user_id', Auth::id())->findOrFail($request->produk_id);
+        $jenisKemasan = JenisKemasan::findOrFail($request->jenis_kemasan_id);
+        $paletWarna = PaletWarna::findOrFail($request->palet_warna_id);
 
-    $jenisKemasan = JenisKemasan::findOrFail($request->jenis_kemasan_id);
-    $paletWarna = PaletWarna::findOrFail($request->palet_warna_id);
+        // 3. Siapkan Prompt untuk Gemini
+        $prompt = "Kamu adalah asisten desainer kemasan AI. Buatkan ide konsep desain kemasan yang detail untuk produk UMKM. "
+                . "Nama Produk: {$produk->nama_produk}. "
+                . "Bentuk Kemasan: {$jenisKemasan->nama_kemasan}. " 
+                . "Palet Warna Utama: {$paletWarna->nama_warna}. " 
+                . "Instruksi/Gaya Visual Tambahan: {$request->instruksi_ai}. "
+                . "Berikan rekomendasi material yang cocok, elemen grafis yang harus ada, dan kesan dari desain tersebut.";
 
-    $prompt = "
-    Kamu adalah desainer kemasan profesional untuk produk UMKM.
+        // 4. Eksekusi API Gemini
+        $apiKey = config('services.gemini.api_key');
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";
 
-    Buatkan konsep desain kemasan yang detail berdasarkan informasi berikut:
-
-    Nama Produk: {$produk->nama_produk}
-    Jenis Kemasan: {$jenisKemasan->nama_kemasan}
-    Palet Warna: {$paletWarna->nama_warna}
-    Instruksi Tambahan: {$request->instruksi_ai}
-
-    Jelaskan:
-
-    1. Konsep utama desain
-    2. Warna dominan
-    3. Tipografi yang cocok
-    4. Elemen visual yang digunakan
-    5. Tata letak kemasan depan
-    6. Target market
-    7. Material kemasan yang direkomendasikan
-    8. Kesan yang ingin ditampilkan
-
-    Buat hasil yang profesional dan mudah dipahami.
-    ";
-
-    try {
-
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . config('services.openai.key'),
-            'Content-Type'  => 'application/json',
-        ])->post('https://api.openai.com/v1/chat/completions', [
-            'model' => 'gpt-4.1-mini',
-            'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => 'Kamu adalah ahli desain kemasan dan branding produk.'
-                ],
-                [
-                    'role' => 'user',
-                    'content' => $prompt
+        try {
+            $response = Http::withoutVerifying()->withHeaders([
+                'Content-Type' => 'application/json'
+            ])->post($url, [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $prompt]
+                        ]
+                    ]
                 ]
-            ],
-            'max_tokens' => 800,
-        ]);
+            ]);
 
-        if (!$response->successful()) {
+            // 5. Simpan Hasilnya
+            if ($response->successful()) {
+                $result = $response->json();
+                $generatedText = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
 
-            return back()->with(
-                'error',
-                'OpenAI Error: ' . $response->body()
-            );
+                if ($generatedText) {
+                    // Buat record desain baru HANYA JIKA AI sukses menjawab
+                    $desain = Desain::create([
+                        'produk_id'        => $produk->id,
+                        'jenis_kemasan_id' => $request->jenis_kemasan_id,
+                        'palet_warna_id'   => $request->palet_warna_id,
+                        'judul_desain'     => $produk->nama_produk,
+                        'status_desain'    => 'generated',
+                        'hasil_ai'         => $generatedText 
+                    ]);
+
+                    // Pindah ke halaman hasil desain!
+                    return redirect()->route('desain.show', $desain->id)->with('success', 'Ide kemasan berhasil diracik!');
+                }
+            }
+
+            // Jika API gagal membalas teks yang benar
+            return back()->with('error', 'Gagal memproses hasil dari AI. Coba klik lagi.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Koneksi terputus: ' . $e->getMessage());
         }
-
-        $generatedText =
-            $response->json()['choices'][0]['message']['content'] ?? null;
-
-        if (!$generatedText) {
-            return back()->with(
-                'error',
-                'AI tidak mengembalikan hasil.'
-            );
-        }
-
-        $desain = Desain::create([
-            'produk_id'        => $produk->id,
-            'jenis_kemasan_id' => $request->jenis_kemasan_id,
-            'palet_warna_id'   => $request->palet_warna_id,
-            'judul_desain'     => $produk->nama_produk,
-            'status_desain'    => 'generated',
-            'hasil_ai'         => $generatedText,
-        ]);
-
-        return redirect()
-            ->route('desain.show', $desain->id)
-            ->with('success', 'Ide kemasan berhasil dibuat!');
-
-    } catch (\Exception $e) {
-
-        return back()->with(
-            'error',
-            'Error: ' . $e->getMessage()
-        );
     }
-}
 
     public function show($id)
     {
@@ -140,31 +110,34 @@ class DesainController extends Controller
         return redirect()->route('desain.index')->with('success', 'Desain berhasil dihapus!');
     }
 
-    public function generateAjax(Request $request)
+    public function generateGemini(Request $request)
     {
         // 1. Validasi input dari Javascript
         $request->validate([
             'prompt'           => ['required', 'string'],
-            'jenis_kemasan_id' => ['required', 'exists:jenis_kemasans,id'],
-            'palet_warna_id'   => ['required', 'exists:palet_warnas,id'],
+            'jenis_kemasan_id' => ['nullable', 'exists:jenis_kemasans,id'],
+            'palet_warna_id'   => ['nullable', 'exists:palet_warnas,id'],
+            'produk_id'        => ['required', 'exists:produks,id'] // Ditambahkan karena frontend mengirim ini
         ]);
 
         // 2. Ambil nama asli dari database
         $jenisKemasan = JenisKemasan::find($request->jenis_kemasan_id);
         $paletWarna = PaletWarna::find($request->palet_warna_id);
+        $produk = Produk::find($request->produk_id);
 
         $kemasanNama = $jenisKemasan ? $jenisKemasan->nama_kemasan : "Kemasan Standar"; 
         $warnaNama = $paletWarna ? $paletWarna->nama_warna : "Warna Bebas";
+        $namaProduk = $produk ? $produk->nama_produk : "Produk UMKM";
         $userPrompt = $request->input('prompt');
 
         // 3. Gabungkan jadi Prompt utuh
-        $fullPrompt = "Sebagai ahli desain kemasan (UI/UX dan Branding), berikan 3 konsep ide desain kemasan dengan detail berikut:\n"
+        $fullPrompt = "Sebagai ahli desain kemasan (UI/UX dan Branding), berikan 3 konsep ide desain kemasan untuk produk {$namaProduk} dengan detail berikut:\n"
                     . "- Jenis Wadah: {$kemasanNama}\n"
                     . "- Palet Warna: {$warnaNama}\n"
                     . "- Instruksi Spesifik: {$userPrompt}\n\n"
-                    . "Jelaskan dengan format poin-poin yang singkat dan menarik.";
+                    . "Jelaskan dengan format poin-poin yang singkat dan menarik untuk pelaku UMKM.";
 
-        // 4. Panggil API Gemini dengan model versi terbaru yang aktif (Gemini 2.5 Flash)
+        // 4. Panggil API Gemini
         $apiKey = config('services.gemini.api_key');
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";
 
@@ -183,21 +156,25 @@ class DesainController extends Controller
             if ($response->successful()) {
                 $resultText = $response->json()['candidates'][0]['content']['parts'][0]['text'];
                 
+                // KITA BUNGKUS DENGAN FORMAT OPENAI AGAR JAVASCRIPT TIDAK ERROR
                 return response()->json([
-                    'success' => true, 
-                    'data' => $resultText
+                    'choices' => [
+                        [
+                            'message' => [
+                                'content' => $resultText
+                            ]
+                        ]
+                    ]
                 ]);
             }
 
             return response()->json([
-            'success' => false, 
-            'message' => 'Error Gemini: ' . $response->body() . ' | Cek API Key: ' . substr($apiKey, 0, 5) . '...'
+                'choices' => [['message' => ['content' => 'Error Gemini: ' . $response->body()]]]
             ], 500);
 
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false, 
-                'message' => 'Koneksi terputus: ' . $e->getMessage()
+                'choices' => [['message' => ['content' => 'Koneksi terputus: ' . $e->getMessage()]]]
             ], 500);
         }
     }

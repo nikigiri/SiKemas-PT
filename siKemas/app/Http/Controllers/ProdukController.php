@@ -79,7 +79,10 @@ class ProdukController extends Controller
     public function edit($id)
     {
         $produk = Produk::where('user_id', Auth::id())->findOrFail($id);
-        return view('produk.edit', compact('produk'));
+        
+        $kategoris = \App\Models\Kategori::all(); 
+        
+        return view('produk.edit', compact('produk', 'kategoris'));
     }
 
     // Update produk
