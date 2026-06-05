@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
-    // Tampilkan semua produk milik user
     public function index()
     {
         $produks = Produk::where('user_id', Auth::id())
@@ -22,22 +21,20 @@ class ProdukController extends Controller
         return view('produk.index', compact('produks'));
     }
 
-    // Tampilkan form tambah produk (step 1: info produk)
     public function create()
     {
         $kategoris = \App\Models\Kategori::all();
         return view('produk.create', compact('kategoris'));
     }
 
-    // Simpan produk baru
     public function store(Request $request)
     {
         $request->validate([
-            'nama_produk'     => ['required', 'string', 'max:255'],
-            'tagline'         => ['nullable', 'string', 'max:255'],
-            'deskripsi_produk'=> ['nullable', 'string'],
-            'kategori_produk' => ['required', 'string'],
-            'gambar_logo'     => ['nullable', 'image', 'max:5120'], // max 5MB
+            'nama_produk'      => ['required', 'string', 'max:255'],
+            'tagline'          => ['nullable', 'string', 'max:255'],
+            'deskripsi_produk' => ['nullable', 'string'],
+            'kategori_produk'  => ['required', 'string'],
+            'gambar_logo'      => ['nullable', 'image', 'max:5120'],
         ]);
 
         $gambarPath = null;
@@ -54,11 +51,9 @@ class ProdukController extends Controller
             'gambar_logo'      => $gambarPath,
         ]);
 
-        // Redirect ke step 2: pilih kemasan & palet warna
         return redirect()->route('produk.pilih-kemasan', $produk->id);
     }
 
-    // Tampilkan form pilih kemasan & palet warna (step 2)
     public function pilihKemasan($id)
     {
         $produk = Produk::where('user_id', Auth::id())->findOrFail($id);
@@ -68,24 +63,19 @@ class ProdukController extends Controller
         return view('produk.pilih-kemasan', compact('produk', 'jenisKemasans', 'paletWarnas'));
     }
 
-    // Tampilkan detail produk
     public function show($id)
     {
         $produk = Produk::where('user_id', Auth::id())->findOrFail($id);
         return view('produk.show', compact('produk'));
     }
 
-    // Tampilkan form edit produk
     public function edit($id)
     {
         $produk = Produk::where('user_id', Auth::id())->findOrFail($id);
-        
-        $kategoris = \App\Models\Kategori::all(); 
-        
+        $kategoris = \App\Models\Kategori::all();
         return view('produk.edit', compact('produk', 'kategoris'));
     }
 
-    // Update produk
     public function update(Request $request, $id)
     {
         $produk = Produk::where('user_id', Auth::id())->findOrFail($id);
@@ -100,7 +90,6 @@ class ProdukController extends Controller
 
         $gambarPath = $produk->gambar_logo;
         if ($request->hasFile('gambar_logo')) {
-            // Hapus gambar lama
             if ($gambarPath) {
                 Storage::disk('public')->delete($gambarPath);
             }
@@ -118,7 +107,6 @@ class ProdukController extends Controller
         return redirect()->route('produk.index')->with('success', 'Produk berhasil diupdate!');
     }
 
-    // Hapus produk
     public function destroy($id)
     {
         $produk = Produk::where('user_id', Auth::id())->findOrFail($id);
@@ -130,5 +118,54 @@ class ProdukController extends Controller
         $produk->delete();
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus!');
+    }
+
+    public function trash()
+    {
+        $produks = Produk::onlyTrashed()
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('produk.trash', compact('produks'));
+    }
+
+    public function restore($id)
+    {
+        $produk = Produk::onlyTrashed()
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
+
+        $produk->restore();
+
+        return redirect()->route('produk.trash')->with('success', 'Produk berhasil dipulihkan!');
+    }
+
+    public function forceDelete($id)
+    {
+        // Hapus semua sekaligus
+        if ($id === 'all') {
+            $produks = Produk::onlyTrashed()->where('user_id', Auth::id())->get();
+            foreach ($produks as $produk) {
+                if ($produk->gambar_logo) {
+                    Storage::disk('public')->delete($produk->gambar_logo);
+                }
+                $produk->forceDelete();
+            }
+            return redirect()->route('produk.trash')->with('success', 'Semua produk berhasil dihapus permanen!');
+        }
+
+        // Hapus satu
+        $produk = Produk::onlyTrashed()
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
+
+        if ($produk->gambar_logo) {
+            Storage::disk('public')->delete($produk->gambar_logo);
+        }
+
+        $produk->forceDelete();
+
+        return redirect()->route('produk.trash')->with('success', 'Produk berhasil dihapus permanen!');
     }
 }
