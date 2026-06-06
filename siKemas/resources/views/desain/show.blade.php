@@ -154,6 +154,7 @@
                     @endif
                 </div>
 
+<<<<<<< HEAD
                 <div class="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-slate-100 gap-4">
                     <a href="{{ route('produk.index') }}"
                        class="w-full sm:w-auto px-5 py-2.5 border border-slate-300 rounded-xl text-slate-700 font-medium hover:bg-slate-50 transition-all flex items-center justify-center focus:ring-2 focus:ring-slate-200 focus:outline-none">
@@ -170,6 +171,16 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                             </svg>
                             Ulangi Desain
+=======
+                <div class="flex justify-between mt-8 pt-4 border-t border-gray-100">
+                    <a href="{{ route('produk.show', $desain->produk_id) }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">
+                        &larr; Kembali ke Produk
+                    </a>
+
+                    <div class="flex gap-3">
+                        <a href="{{ route('produk.pilih-kemasan', [$desain->produk_id, 'desain_id' => $desain->id]) }}" class="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition">
+                            🔄 Ulangi
+>>>>>>> b099451 (revisi admin & super admin)
                         </a>
 
                         <button id="btn-export" onclick="downloadDesain()"

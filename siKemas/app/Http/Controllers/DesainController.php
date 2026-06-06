@@ -28,7 +28,12 @@ class DesainController extends Controller
             'produk_id'        => ['required', 'exists:produks,id'],
             'jenis_kemasan_id' => ['required', 'exists:jenis_kemasans,id'],
             'palet_warna_id'   => ['required', 'exists:palet_warnas,id'],
+<<<<<<< HEAD
             'instruksi_ai'     => ['nullable', 'string'], 
+=======
+            'instruksi_ai'     => ['nullable', 'string'],
+            'desain_id'        => ['nullable', 'exists:desains,id'],
+>>>>>>> b099451 (revisi admin & super admin)
         ]);
 
         // 2. Tarik data relasi untuk bahan prompt
@@ -49,6 +54,7 @@ class DesainController extends Controller
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";
 
         try {
+<<<<<<< HEAD
             $response = Http::withoutVerifying()->withHeaders([
                 'Content-Type' => 'application/json'
             ])->post($url, [
@@ -60,6 +66,33 @@ class DesainController extends Controller
                     ]
                 ]
             ]);
+=======
+            $generatedText = $this->callGroq(
+                'Kamu adalah ahli desain kemasan dan branding produk UMKM.',
+                $prompt
+            );
+
+            if ($request->desain_id) {
+                $desain = Desain::where('produk_id', $produk->id)
+                    ->findOrFail($request->desain_id);
+
+                $desain->update([
+                    'jenis_kemasan_id' => $request->jenis_kemasan_id,
+                    'palet_warna_id'   => $request->palet_warna_id,
+                    'hasil_ai'         => $generatedText,
+                    'status_desain'    => 'generated',
+                ]);
+            } else {
+                $desain = Desain::create([
+                    'produk_id'        => $produk->id,
+                    'jenis_kemasan_id' => $request->jenis_kemasan_id,
+                    'palet_warna_id'   => $request->palet_warna_id,
+                    'judul_desain'     => $produk->nama_produk,
+                    'status_desain'    => 'generated',
+                    'hasil_ai'         => $generatedText,
+                ]);
+            }
+>>>>>>> b099451 (revisi admin & super admin)
 
             // 5. Simpan Hasilnya
             if ($response->successful()) {
@@ -89,7 +122,53 @@ class DesainController extends Controller
             return back()->with('error', 'Koneksi terputus: ' . $e->getMessage());
         }
     }
+<<<<<<< HEAD
 
+=======
+    // =============================================
+    // GENERATE AJAX: Preview sebelum simpan
+    // =============================================
+    public function generateAjax(Request $request)
+    {
+        $request->validate([
+            'prompt'           => ['required', 'string'],
+            'jenis_kemasan_id' => ['required', 'exists:jenis_kemasans,id'],
+            'palet_warna_id'   => ['required', 'exists:palet_warnas,id'],
+        ]);
+
+        $jenisKemasan = JenisKemasan::find($request->jenis_kemasan_id);
+        $paletWarna   = PaletWarna::find($request->palet_warna_id);
+
+        $kemasanNama = $jenisKemasan->nama_kemasan ?? 'Kemasan Standar';
+        $warnaNama   = $paletWarna->nama_warna     ?? 'Warna Bebas';
+
+        $fullPrompt = "Berikan 3 konsep ide desain kemasan dengan detail berikut:\n"
+                    . "- Jenis Wadah      : {$kemasanNama}\n"
+                    . "- Palet Warna      : {$warnaNama}\n"
+                    . "- Instruksi Khusus : {$request->prompt}\n\n"
+                    . "Jelaskan tiap konsep dengan poin-poin singkat dan menarik.";
+
+        try {
+            $resultText = $this->callGroq(
+                'Kamu adalah ahli desain kemasan dan branding produk UMKM.',
+                $fullPrompt
+            );
+
+            return response()->json([
+                'success' => true,
+                'data'    => $resultText,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // =============================================
+>>>>>>> b099451 (revisi admin & super admin)
     public function show($id)
     {
         $desain = Desain::whereHas('produk', function ($query) {
@@ -105,9 +184,11 @@ class DesainController extends Controller
             $query->where('user_id', Auth::id());
         })->findOrFail($id);
 
+        $produk_id = $desain->produk_id;
+
         $desain->delete();
 
-        return redirect()->route('desain.index')->with('success', 'Desain berhasil dihapus!');
+        return redirect()->route('produk.show', $produk_id)->with('success', 'Desain berhasil dihapus!');
     }
 
     public function generateGemini(Request $request)

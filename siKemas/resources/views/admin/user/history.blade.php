@@ -3,8 +3,7 @@
 
         {{-- Header --}}
         <div class="flex items-center gap-4 mb-8">
-            <a href="{{ route('admin.user.index') }}"
-               class="text-gray-400 hover:text-gray-600">
+            <a href="{{ auth()->user()->hasRole('superadmin') ? route('admin.user.index') : route('kwt-admin.user.index') }}" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
                 </svg>

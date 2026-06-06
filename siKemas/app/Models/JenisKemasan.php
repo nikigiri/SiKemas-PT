@@ -10,12 +10,17 @@ class JenisKemasan extends Model
     use HasFactory;
 
     protected $fillable = [
+        'kwt_id',
         'nama_kemasan',
         'deskripsi_kemasan',
         'ikon_kemasan',
     ];
 
-    // Relasi ke Desain
+    public function kwt()
+    {
+        return $this->belongsTo(Kwt::class);
+    }
+
     public function desains()
     {
         return $this->hasMany(Desain::class);

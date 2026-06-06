@@ -424,6 +424,19 @@
                                     </svg>
                                 </button>
 
+<<<<<<< HEAD
+=======
+                                <div class="flex gap-2.5 mt-5">
+                                    <a href="{{ route('produk.show', $produk->id) }}"
+                                       class="flex-1 text-center py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition">
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('produk.create', $produk->id) }}"
+                                       class="flex-1 text-center py-2 rounded-xl bg-[#2f6d46] text-white text-sm font-medium hover:bg-[#245538] transition">
+                                        Edit
+                                    </a>
+                                </div>
+>>>>>>> b099451 (revisi admin & super admin)
                             </div>
                         </div>
                     </div>

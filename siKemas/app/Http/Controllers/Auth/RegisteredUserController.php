@@ -29,10 +29,8 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // simpan sementara
-        session([
-            'register_data' => $validated
-        ]);
+        $request->session()->put('register_data', $validated);
+        $request->session()->save();
 
         return redirect()->route('register.business');
     }
@@ -56,19 +54,21 @@ class RegisteredUserController extends Controller
             'kwt_id'       => ['required', 'exists:kwts,id'],
         ]);
 
-        $registerData = session('register_data');
+        $registerData = $request->session()->get('register_data');
 
-        // CREATE USER
+        if (!$registerData) {
+            return redirect()->route('register')
+                ->with('error', 'Sesi registrasi habis, silakan ulangi.');
+        }
+
         $user = User::create([
             'name'          => $registerData['name'],
             'email'         => $registerData['email'],
             'no_tlp'        => $registerData['no_tlp'],
             'password'      => Hash::make($registerData['password']),
-
             'nama_usaha'    => $request->nama_usaha,
             'alamat_usaha'  => $request->alamat_usaha,
             'kwt_id'        => $request->kwt_id,
-
             'status'        => 'pending',
         ]);
 
@@ -76,8 +76,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        // hapus session
-        session()->forget('register_data');
+        $request->session()->forget('register_data');
 
         return redirect()
             ->route('login')

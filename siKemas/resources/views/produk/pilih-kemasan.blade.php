@@ -4,14 +4,16 @@
 
             {{-- Header --}}
             <div class="mb-8">
+<<<<<<< HEAD
                 <a href="{{ route('produk.create') }}"
                    class="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition mb-4">
                 </a>
+=======
+>>>>>>> b099451 (revisi admin & super admin)
                 <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Pilih Kemasan & Desain</h1>
                 <p class="text-gray-400 mt-1 text-sm">Sesuaikan jenis kemasan, palet warna, dan instruksi AI untuk produk kamu.</p>
             </div>
 
-            {{-- Kotak Error --}}
             @if (session('error'))
                 <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium flex items-start gap-3">
                     <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -19,10 +21,22 @@
                 </div>
             @endif
 
+<<<<<<< HEAD
             {{-- Form sekarang langsung diarahkan ke desain.store --}}
             <form id="formGenerate" method="POST" action="{{ route('desain.store') }}" onsubmit="tampilkanLoading()">
+=======
+            <form id="formGenerate" method="POST" action="{{ route('desain.store') }}"
+                onsubmit="document.getElementById('loadingIndicator').classList.remove('hidden');
+                document.getElementById('btnSubmit').disabled = true;
+                document.getElementById('btnSubmit').innerHTML = 'Memproses...';">
+
+>>>>>>> b099451 (revisi admin & super admin)
                 @csrf
                 <input type="hidden" name="produk_id" value="{{ $produk->id }}">
+
+                @if ($desain)
+                    <input type="hidden" name="desain_id" value="{{ $desain->id }}">
+                @endif
 
                 {{-- Step 1: Jenis Kemasan --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
@@ -37,7 +51,13 @@
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                         @foreach ($jenisKemasans as $kemasan)
                             <label class="cursor-pointer group">
+<<<<<<< HEAD
                                 <input type="radio" name="jenis_kemasan_id" value="{{ $kemasan->id }}" required class="hidden peer">
+=======
+                                <input type="radio" name="jenis_kemasan_id" value="{{ $kemasan->id }}"
+                                    class="hidden peer"
+                                    {{ ($desain && $desain->jenis_kemasan_id == $kemasan->id) ? 'checked' : '' }}>
+>>>>>>> b099451 (revisi admin & super admin)
                                 <div class="border-2 border-gray-100 bg-gray-50 rounded-xl p-3 text-center
                                             transition-all duration-200
                                             peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:shadow-md peer-checked:shadow-emerald-100
@@ -67,7 +87,13 @@
                     <div class="flex flex-wrap gap-3">
                         @foreach ($paletWarnas as $palet)
                             <label class="cursor-pointer group">
+<<<<<<< HEAD
                                 <input type="radio" name="palet_warna_id" value="{{ $palet->id }}" required class="hidden peer">
+=======
+                                <input type="radio" name="palet_warna_id" value="{{ $palet->id }}"
+                                    class="hidden peer"
+                                    {{ ($desain && $desain->palet_warna_id == $palet->id) ? 'checked' : '' }}>
+>>>>>>> b099451 (revisi admin & super admin)
                                 <div class="border-2 border-transparent rounded-xl p-1.5 transition-all duration-200
                                             peer-checked:border-emerald-500 peer-checked:shadow-md peer-checked:shadow-emerald-100
                                             hover:border-emerald-300">
@@ -102,9 +128,8 @@
                                placeholder-gray-400 resize-none
                                focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent focus:bg-white
                                transition duration-200"
-                        placeholder="Contoh: Buatkan desain minimalis modern untuk keripik pisang, target market anak muda usia 18-25 tahun dengan nuansa earthy dan playful..."></textarea>
+                        placeholder="Contoh: Buatkan desain minimalis modern untuk keripik pisang, target market anak muda usia 18-25 tahun dengan nuansa earthy dan playful...">{{ $desain?->instruksi_ai }}</textarea>
 
-                    {{-- Quick Prompt Chips --}}
                     <div class="flex flex-wrap gap-2 mt-3">
                         <span class="text-xs text-gray-400 self-center mr-1">Coba:</span>
                         @foreach ([
@@ -131,7 +156,11 @@
 
                 {{-- Actions --}}
                 <div class="flex items-center justify-between">
+<<<<<<< HEAD
                     <a href="{{ route('produk.create') }}"
+=======
+                    <a href="{{ route('produk.show', $produk->id) }}"
+>>>>>>> b099451 (revisi admin & super admin)
                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600
                               hover:bg-gray-50 transition duration-150">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -143,6 +172,7 @@
                     <button id="btnSubmit" type="submit"
                             class="inline-flex items-center gap-2 px-7 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-semibold
                                    hover:bg-emerald-600 active:scale-95 transition duration-150 shadow-md shadow-emerald-200">
+<<<<<<< HEAD
                         <span id="btnText" class="flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
@@ -151,10 +181,20 @@
                         </span>
                     </button>
                 </div>
+=======
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+                        </svg>
+                        {{ $desain ? 'Generate Ulang' : 'Generate dengan AI' }}
+                    </button>
+                </div>
+
+>>>>>>> b099451 (revisi admin & super admin)
             </form>
         </div>
     </div>
 
+<<<<<<< HEAD
     {{-- Script ringan hanya untuk menampilkan animasi loading saat form disubmit --}}
     <script>
         function tampilkanLoading() {
@@ -170,4 +210,6 @@
             document.getElementById('btnText').innerHTML = 'Meracik Desain...';
         }
     </script>
+=======
+>>>>>>> b099451 (revisi admin & super admin)
 </x-app-layout>
