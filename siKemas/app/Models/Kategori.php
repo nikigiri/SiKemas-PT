@@ -10,7 +10,13 @@ class Kategori extends Model
     use HasFactory;
 
     protected $fillable = [
+        'kwt_id',
         'nama_kategori',
         'deskripsi',
     ];
+
+    public function kwt()
+    {
+        return $this->belongsTo(Kwt::class);
+    }
 }
