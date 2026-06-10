@@ -13,11 +13,30 @@ use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use App\Models\Produk;
+use Illuminate\Support\Facades\Http;
 
 // --- ROUTE OPENAI (DI-COMMENT UNTUK BACKUP DOSEN) ---
 // use App\Http\Controllers\AIController;
 // Route::post('/generate-ai', [AIController::class, 'generate']);
 // ----------------------------------------------------
+
+Route::get('/test-flux', function () {
+
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . config('services.huggingface.api_key'),
+    ])->timeout(120)->post(
+        'https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell',
+        [
+            'inputs' => 'Professional 3D snack packaging mockup, modern design, realistic lighting'
+        ]
+    );
+
+    return response(
+        $response->body(),
+        200,
+        ['Content-Type' => 'image/png']
+    );
+});
 
 Route::get('/', function () {
     return view('welcome');
@@ -109,7 +128,6 @@ Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
         })->name('dashboard');
 
         Route::resource('produk', ProdukController::class);
-<<<<<<< HEAD
 
         Route::get('/produk/{id}/pilih-kemasan',
             [ProdukController::class, 'pilihKemasan']
@@ -131,14 +149,6 @@ Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
             [DesainController::class, 'generateGemini']
         )->name('desain.generate-gemini');
         // -----------------------------------
-<<<<<<< HEAD
-=======
-=======
-        Route::get('/produk/{id}/pilih-kemasan', [ProdukController::class, 'pilihKemasan'])->name('produk.pilih-kemasan');
-        Route::resource('desain', DesainController::class)->only(['store', 'show', 'destroy']);
-        Route::post('/generate-ai', [DesainController::class, 'generateAjax'])->name('desain.generate-ajax');
->>>>>>> b099451 (revisi admin & super admin)
->>>>>>> b22d693d2710af424f889b3e37c1f08faf40432b
     });
 
 
