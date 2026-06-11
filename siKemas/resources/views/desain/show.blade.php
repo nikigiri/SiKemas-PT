@@ -130,6 +130,7 @@
                     </p>
                 </div>
 
+
                 <div class="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-2xl p-6 mb-8 shadow-sm">
                     <div class="flex items-center gap-2 mb-4">
                         <div class="p-1.5 bg-emerald-100 rounded-lg text-emerald-600">
@@ -154,13 +155,7 @@
                     @endif
                 </div>
 
-                <div class="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-slate-100 gap-4">
-                    <a href="{{ route('produk.index') }}"
-                       class="w-full sm:w-auto px-5 py-2.5 border border-slate-300 rounded-xl text-slate-700 font-medium hover:bg-slate-50 transition-all flex items-center justify-center focus:ring-2 focus:ring-slate-200 focus:outline-none">
-                        <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        Kembali
+
                     </a>
 
                     <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -181,6 +176,17 @@
                         </button>
 
                         <a href="{{ route('desain.export', $desain->id) }}"
+                            🔄 Ulangi
+                        </a>
+
+                        <button id="btn-export" onclick="downloadDesain()"
+                                class="px-4 py-2 bg-emerald-600 text-white font-medium rounded-md hover:bg-emerald-700 transition flex items-center gap-2 shadow-sm h-10">
+                            🖼️ Download Mockup
+                        </button>
+
+                        <a href="{{ route('desain.export', $desain->id) }}"
+                           class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition flex items-center gap-2 shadow-sm h-10">
+                            📄 Cetak Detail AI
                            class="px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-all flex items-center justify-center shadow-md shadow-emerald-600/20 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600 focus:outline-none">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Produk;
 use App\Models\JenisKemasan;
 use App\Models\PaletWarna;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -23,13 +24,19 @@ class ProdukController extends Controller
 
     public function create()
     {
-        $kategoris = \App\Models\Kategori::all();
+        $kwtId = Auth::user()->kwt_id;
+
+        $kategoris = Kategori::where(function ($q) use ($kwtId) {
+            $q->whereNull('kwt_id')->orWhere('kwt_id', $kwtId);
+        })->orderBy('nama_kategori')->get();
+
         return view('produk.create', compact('kategoris'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+
             'nama_produk'      => ['required', 'string', 'max:255'],
             'tagline'          => ['nullable', 'string', 'max:255'],
             'deskripsi_produk' => ['nullable', 'string'],
@@ -54,13 +61,26 @@ class ProdukController extends Controller
         return redirect()->route('produk.pilih-kemasan', $produk->id);
     }
 
-    public function pilihKemasan($id)
+    // Tampilkan form pilih kemasan & palet warna (step 2)
+    public function pilihKemasan($id, Request $request)
     {
         $produk = Produk::where('user_id', Auth::id())->findOrFail($id);
-        $jenisKemasans = JenisKemasan::all();
+
+        $kwtId = Auth::user()->kwt_id;
+
+        $jenisKemasans = JenisKemasan::where(function ($q) use ($kwtId) {
+            $q->whereNull('kwt_id')->orWhere('kwt_id', $kwtId);
+        })->get();
+
         $paletWarnas = PaletWarna::all();
 
-        return view('produk.pilih-kemasan', compact('produk', 'jenisKemasans', 'paletWarnas'));
+        $desain = null;
+        if ($request->query('desain_id')) {
+            $desain = \App\Models\Desain::where('produk_id', $produk->id)
+                ->find($request->query('desain_id'));
+        }
+
+        return view('produk.pilih-kemasan', compact('produk', 'jenisKemasans', 'paletWarnas', 'desain'));
     }
 
     public function show($id)
@@ -72,7 +92,9 @@ class ProdukController extends Controller
     public function edit($id)
     {
         $produk = Produk::where('user_id', Auth::id())->findOrFail($id);
-        $kategoris = \App\Models\Kategori::all();
+
+        $kategoris = \App\Models\Kategori::all(); 
+        
         return view('produk.edit', compact('produk', 'kategoris'));
     }
 

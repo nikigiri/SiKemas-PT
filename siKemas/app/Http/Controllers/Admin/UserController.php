@@ -16,6 +16,14 @@ class UserController extends Controller
         return view('admin.user.index', compact('users'));
     }
 
+    // List user hanya di KWT admin yang login
+    public function kwtIndex()
+    {
+        $kwtId = auth()->user()->kwt_id;
+        $users = User::role('user')->where('kwt_id', $kwtId)->with('kwt')->orderBy('created_at', 'desc')->get();
+        return view('admin.user.index', compact('users'));
+    }
+
     // Approve user
     public function approve($id)
     {
@@ -32,33 +40,37 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'User berhasil ditolak!');
     }
 
-    // Tambah admin baru
     public function createAdmin()
     {
-        return view('admin.user.create-admin');
+        $kwts = Kwt::all();
+        return view('admin.user.create-admin', compact('kwts'));
     }
 
     public function storeAdmin(Request $request)
     {
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'min:8'],
+            'name'          => ['required', 'string', 'max:255'],
+            'email'         => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'no_tlp'        => ['required', 'string', 'max:20'],
+            'alamat_usaha'  => ['required', 'string'],
+            'kwt_id'        => ['required', 'exists:kwts,id'],
+            'password'      => ['required', 'confirmed', 'min:8'],
         ]);
 
         $user = User::create([
-            'name'          => $request->name,
-            'nama_usaha'    => '-',
-            'no_tlp'        => '-',
-            'alamat_usaha'  => '-',
-            'status'        => 'approved',
-            'password'      => bcrypt($request->password),
-            'email'         => $request->email,
+            'name'         => $request->name,
+            'nama_usaha'   => '-',
+            'no_tlp'       => $request->no_tlp,
+            'alamat_usaha' => $request->alamat_usaha,
+            'kwt_id'       => $request->kwt_id,
+            'status'       => 'approved',
+            'password'     => bcrypt($request->password),
+            'email'        => $request->email,
         ]);
 
         $user->assignRole('admin');
 
-        return redirect()->route('admin.user.index')->with('success', 'Admin baru berhasil ditambahkan!');
+        return redirect()->route('admin.kwt.user-list', $user->kwt_id)->with('success', 'Admin baru berhasil ditambahkan!');
     }
 
     //history

@@ -223,7 +223,7 @@
                                     Profil Saya
                                 </a>
 
-                                <a href="{{ route('desain.index') }}"
+                                <a href="{{ route('produk.index') }}"
                                    class="flex items-center gap-3
                                           px-4 py-3 rounded-2xl
                                           text-sm font-medium text-gray-700
@@ -233,7 +233,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                               d="M2.25 15.75l5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3 21h18M6.75 6.75h.008v.008H6.75V6.75Z"/>
                                     </svg>
-                                    Desain Saya
+                                    Produk Saya
                                 </a>
 
                             @endif

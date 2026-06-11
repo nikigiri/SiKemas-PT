@@ -9,6 +9,7 @@ use App\Models\Produk;
 
 class AdminController extends Controller
 {
+    // Dashboard Superadmin
     public function dashboard()
     {
         $totalUser    = User::role('user')->count();
@@ -22,5 +23,15 @@ class AdminController extends Controller
             'totalKwt',
             'totalProduk'
         ));
+    }
+
+    // Dashboard Admin per KWT
+    public function kwtDashboard()
+    {
+        $kwt          = auth()->user()->kwt;
+        $totalUser    = User::role('user')->where('kwt_id', auth()->user()->kwt_id)->count();
+        $totalPending = User::role('user')->where('kwt_id', auth()->user()->kwt_id)->where('status', 'pending')->count();
+
+        return view('admin.kwt-dashboard', compact('kwt', 'totalUser', 'totalPending'));
     }
 }

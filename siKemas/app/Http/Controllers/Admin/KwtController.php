@@ -55,11 +55,10 @@ class KwtController extends Controller
         return redirect()->route('admin.kwt.index')->with('success', 'KWT berhasil diupdate!');
     }
 
-    public function userList($id)
+    public function userList(Kwt $kwt)
     {
-        $kwt = Kwt::findOrFail($id);
-        $users = $kwt->users()->where('status', 'approved')->get();
-        return view('admin.user.index', compact('kwt', 'users'));
+        $users = $kwt->users()->with('kwt')->orderBy('created_at', 'desc')->get();
+        return view('admin.kwt.user-list', compact('kwt', 'users'));
     }
 
     public function destroy($id)

@@ -1,5 +1,4 @@
 <x-app-layout>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
         .produk-root * { font-family: 'DM Sans', sans-serif; }
@@ -30,8 +29,6 @@
             <div class="fu fu1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 -ml-1">
 
                 <div class="flex items-center gap-3">
-
-                    {{-- Back button --}}
                     <a href="{{ route('dashboard') }}"
                        class="group w-10 h-10 flex items-center justify-center shrink-0
                               rounded-xl bg-white border border-gray-200 shadow-sm
@@ -43,12 +40,9 @@
                                   d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
                         </svg>
                     </a>
-
                     <h1 class="text-2xl font-bold text-gray-800">Produk Saya</h1>
-
                 </div>
 
-                {{-- CTA --}}
                 <a href="{{ route('produk.create') }}"
                    class="inline-flex items-center gap-2.5 px-7 py-3.5
                           bg-green-700 hover:bg-green-800 text-white
@@ -127,8 +121,7 @@
                                 <div class="h-44 overflow-hidden relative">
                                     <img src="{{ asset('storage/' . $produk->gambar_logo) }}"
                                          alt="{{ $produk->nama_produk }}"
-                                         class="w-full h-full object-cover
-                                                group-hover:scale-105 transition duration-500">
+                                         class="w-full h-full object-cover transition duration-500">
                                 </div>
                             @else
                                 <div class="h-44 bg-gradient-to-br from-indigo-50 to-purple-50
@@ -158,6 +151,10 @@
                                 </p>
 
                                 {{-- Divider --}}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> b22d693d2710af424f889b3e37c1f08faf40432b
                                 <div class="flex gap-2.5 mt-5">
                                     {{-- Tombol Detail --}}
                                     <a href="{{ route('produk.show', $produk->id) }}"
@@ -192,18 +189,26 @@
                                             </svg>
                                         </button>
                                     </form>
+<<<<<<< HEAD
+=======
+=======
+                                <div class="border-t border-gray-100 mt-4 pt-4 flex items-center gap-2">
+                                    <a href="{{ route('produk.show', $produk->id) }}"
+                                       class="flex-1 text-center py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition">
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('produk.edit', $produk->id) }}"
+                                       class="flex-1 text-center py-2 rounded-xl bg-[#2f6d46] text-white text-sm font-medium hover:bg-[#245538] transition">
+                                        Edit
+                                    </a>
+>>>>>>> b099451 (revisi admin & super admin)
+>>>>>>> b22d693d2710af424f889b3e37c1f08faf40432b
                                 </div>
-
                             </div>
                         </div>
-
                     @endforeach
-
                 </div>
-
             @endif
-
         </div>
     </div>
-
 </x-app-layout>

@@ -5,7 +5,11 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
+<<<<<<< HEAD
+        <div class="relative overflow-hidden bg-white border-b border-gray-100">
+=======
     .dash-wrap * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; }
+>>>>>>> b22d693d2710af424f889b3e37c1f08faf40432b
 
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(20px); }
@@ -21,7 +25,12 @@
     .anim-4 { animation: fadeInUp 0.55s ease both 0.35s; }
     .anim-5 { animation: fadeInUp 0.55s ease both 0.45s; }
 
+<<<<<<< HEAD
+            <div class="relative z-10 max-w-8xl mx-auto px-6 md:px-8 lg:px-12 py-16 lg:py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
+=======
     .badge-float { animation: floatY 3s ease-in-out infinite; }
+>>>>>>> b22d693d2710af424f889b3e37c1f08faf40432b
 
     .card-produk {
         animation: fadeInUp 0.5s ease both;
@@ -298,6 +307,21 @@
             </div>
         </div>
 
+<<<<<<< HEAD
+        {{--PRODUK SAYA--}}
+        <div class="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-10" id="produk-saya">
+
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Produk Saya</h2>
+                    <p class="text-sm text-gray-400 mt-0.5">Kelola produk dan desain kemasan Anda</p>
+                </div>
+                <a href="{{ route('produk.index') }}"
+                   class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#2f6d46] text-white text-sm font-semibold hover:bg-[#245538] transition">
+                    Lihat Semua
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+=======
         @php
             $sort = request('sort', 'terbaru');
             $query = Auth::user()->produks()->with('desains');
@@ -332,6 +356,7 @@
                         <line x1="48" y1="34" x2="48" y2="48" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
                         <line x1="34" y1="41" x2="48" y2="34" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.35"/>
                         <line x1="62" y1="41" x2="48" y2="34" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.35"/>
+>>>>>>> b22d693d2710af424f889b3e37c1f08faf40432b
                     </svg>
                 </div>
                 <h3 class="text-[17px] font-extrabold text-gray-800 mb-2">Belum ada produk</h3>
@@ -355,6 +380,46 @@
                     <div class="card-produk bg-white rounded-2xl border border-gray-100 shadow-sm group w-full"
                          style="animation-delay: {{ 0.08 + ($index * 0.06) }}s">
 
+<<<<<<< HEAD
+            @else
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    @foreach($produks as $index => $produk)
+
+                        <div class="card-produk bg-white rounded-[22px] border border-gray-100
+                                    overflow-hidden shadow-sm"
+                             style="animation-delay: {{ 0.10 + ($index * 0.06) }}s">
+
+                            {{-- Thumbnail --}}
+                            @if ($produk->gambar_logo)
+                                <div class="h-44 overflow-hidden relative">
+                                    <img src="{{ asset('storage/' . $produk->gambar_logo) }}"
+                                         alt="{{ $produk->nama_produk }}"
+                                         class="w-full h-full object-cover
+                                                group-hover:scale-105 transition duration-500">
+                                </div>
+                            @else
+                                <div class="h-44 bg-gradient-to-br from-indigo-50 to-purple-50
+                                            flex items-center justify-center">
+                                    <svg class="w-12 h-12 text-indigo-200" fill="none" stroke="currentColor"
+                                         stroke-width="1.3" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V7"/>
+                                    </svg>
+                                </div>
+                            @endif
+                            {{-- Content --}}
+                            <div class="p-5">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <h3 class="font-bold text-gray-900 truncate">{{ $produk->nama_produk }}</h3>
+                                        <p class="text-xs text-gray-400 mt-0.5">{{ $produk->kategori_produk }}</p>
+                                    </div>
+                                    <span class="shrink-0 bg-green-100 text-green-700 text-[11px] font-semibold px-2.5 py-1 rounded-full">
+                                        {{ $produk->desains->count() }} Desain
+                                    </span>
+                                </div>
+=======
                         {{-- Thumbnail --}}
                         @if($produk->gambar_logo)
                             <div class="h-40 overflow-hidden rounded-t-2xl">
@@ -380,6 +445,7 @@
                             <p class="text-[12.5px] text-gray-400 mt-0.5 mb-4 truncate">
                                 {{ $produk->tagline ?? $produk->kategori_produk }}
                             </p>
+>>>>>>> b22d693d2710af424f889b3e37c1f08faf40432b
 
                             {{-- Action buttons: Detail | Edit | [trash icon] --}}
                             <div class="flex gap-2">
@@ -424,6 +490,19 @@
                                     </svg>
                                 </button>
 
+<<<<<<< HEAD
+=======
+                                <div class="flex gap-2.5 mt-5">
+                                    <a href="{{ route('produk.show', $produk->id) }}"
+                                       class="flex-1 text-center py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition">
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('produk.create', $produk->id) }}"
+                                       class="flex-1 text-center py-2 rounded-xl bg-[#2f6d46] text-white text-sm font-medium hover:bg-[#245538] transition">
+                                        Edit
+                                    </a>
+                                </div>
+>>>>>>> b099451 (revisi admin & super admin)
                             </div>
                         </div>
                     </div>
