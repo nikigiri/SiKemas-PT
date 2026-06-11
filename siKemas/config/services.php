@@ -43,8 +43,12 @@ return [
 
     'gemini' => [
     'api_key' => env('GEMINI_API_KEY'),
-
+    ],
     // 'openai' => [
     //     'key' => env('OPENAI_API_KEY'),
+
+    'huggingface' => [
+    'api_key' => env('HUGGINGFACE_API_KEY'),
+
     ],
 ];

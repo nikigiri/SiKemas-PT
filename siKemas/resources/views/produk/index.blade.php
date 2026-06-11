@@ -151,10 +151,6 @@
                                 </p>
 
                                 {{-- Divider --}}
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> b22d693d2710af424f889b3e37c1f08faf40432b
                                 <div class="flex gap-2.5 mt-5">
                                     {{-- Tombol Detail --}}
                                     <a href="{{ route('produk.show', $produk->id) }}"
@@ -189,20 +185,6 @@
                                             </svg>
                                         </button>
                                     </form>
-<<<<<<< HEAD
-=======
-=======
-                                <div class="border-t border-gray-100 mt-4 pt-4 flex items-center gap-2">
-                                    <a href="{{ route('produk.show', $produk->id) }}"
-                                       class="flex-1 text-center py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition">
-                                        Detail
-                                    </a>
-                                    <a href="{{ route('produk.edit', $produk->id) }}"
-                                       class="flex-1 text-center py-2 rounded-xl bg-[#2f6d46] text-white text-sm font-medium hover:bg-[#245538] transition">
-                                        Edit
-                                    </a>
->>>>>>> b099451 (revisi admin & super admin)
->>>>>>> b22d693d2710af424f889b3e37c1f08faf40432b
                                 </div>
                             </div>
                         </div>

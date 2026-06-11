@@ -28,7 +28,7 @@ class ProdukController extends Controller
 
         $kategoris = Kategori::where(function ($q) use ($kwtId) {
             $q->whereNull('kwt_id')->orWhere('kwt_id', $kwtId);
-        })->orderBy('nama_kategori')->get();
+        }) -> orderBy('nama_kategori')->get();
 
         return view('produk.create', compact('kategoris'));
     }
@@ -36,7 +36,6 @@ class ProdukController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-
             'nama_produk'      => ['required', 'string', 'max:255'],
             'tagline'          => ['nullable', 'string', 'max:255'],
             'deskripsi_produk' => ['nullable', 'string'],
