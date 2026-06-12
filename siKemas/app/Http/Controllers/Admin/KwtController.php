@@ -39,6 +39,33 @@ class KwtController extends Controller
         return view('admin.kwt.edit', compact('kwt'));
     }
 
+    public function editSelf()
+    {
+        $kwt = auth()->user()->kwt;
+
+        if (!$kwt) {
+            return redirect()->route('kwt-admin.dashboard')->with('error', 'KWT tidak ditemukan.');
+        }
+
+        return view('admin.kwt.edit-self', compact('kwt'));
+    }
+
+    public function updateSelf(Request $request)
+    {
+        $kwt = auth()->user()->kwt;
+
+        $request->validate([
+            'nama_kwt'   => 'required|string|max:255',
+            'no_kwt'     => 'nullable|string|max:100',
+            'desa'       => 'nullable|string|max:255',
+            'alamat_kwt' => 'nullable|string|max:500',
+        ]);
+
+        $kwt->update($request->only(['nama_kwt', 'no_kwt', 'desa', 'alamat_kwt']));
+
+        return redirect()->route('kwt-admin.dashboard')->with('success', 'Info KWT berhasil diperbarui!');
+    }
+
     public function update(Request $request, $id)
     {
         $kwt = Kwt::findOrFail($id);

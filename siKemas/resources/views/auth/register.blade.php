@@ -206,11 +206,8 @@
                                 type="submit"
                                 class="w-full bg-gradient-to-r from-[#2f6d46] to-[#7ab46a]
                                        text-white font-semibold py-3.5 rounded-2xl
-                                       hover:opacity-90 transition shadow-lg shadow-green-200"
-                            >
-
+                                       hover:opacity-90 transition shadow-lg shadow-green-200">
                                 Lanjutkan
-
                             </button>
 
                             {{-- LOGIN --}}

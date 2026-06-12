@@ -128,6 +128,16 @@ class UserController extends Controller
         return view('admin.user.history', compact('user', 'histories'));
     }
 
+    public function produk(\App\Models\User $user)
+    {
+        $produks = \App\Models\Produk::where('user_id', $user->id)
+            ->with('desains')
+            ->latest()
+            ->get();
+
+        return view('admin.user.produk', compact('user', 'produks'));
+    }
+
     // Hapus user
     public function destroy($id)
     {

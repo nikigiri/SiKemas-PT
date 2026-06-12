@@ -25,79 +25,80 @@ class DesainController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'produk_id'        => ['required', 'exists:produks,id'],
-            'jenis_kemasan_id' => ['required', 'exists:jenis_kemasans,id'],
-            'palet_warna_id'   => ['required', 'exists:palet_warnas,id'],
-            'instruksi_ai'     => ['nullable', 'string'],
-            'desain_id'        => ['nullable', 'exists:desains,id'],
+            'produk_id'             => ['required', 'exists:produks,id'],
+            'jenis_kemasan_id'      => ['required', 'exists:jenis_kemasans,id'],
+            'palet_warna_id'        => ['nullable', 'exists:palet_warnas,id'],
+            'instruksi_ai'          => ['nullable', 'string'],
+            'desain_id'             => ['nullable', 'exists:desains,id'],
+            'custom_warna_utama'    => ['required_if:use_custom_color,1', 'nullable', 'string'],
+            'custom_warna_sekunder' => ['required_if:use_custom_color,1', 'nullable', 'string'],
+            'custom_warna_aksen'    => ['required_if:use_custom_color,1', 'nullable', 'string'],
         ]);
 
         $produk = Produk::where('user_id', Auth::id())->findOrFail($request->produk_id);
         $jenisKemasan = JenisKemasan::findOrFail($request->jenis_kemasan_id);
-        $paletWarna = PaletWarna::findOrFail($request->palet_warna_id);
+        
+        // Cek apakah pakai custom color atau preset
+        if ($request->use_custom_color && !$request->palet_warna_id) {
+            // Cari dulu apakah kombinasi warna ini sudah ada
+            $paletWarna = PaletWarna::where('warna_utama', $request->custom_warna_utama)
+                ->where('warna_sekunder', $request->custom_warna_sekunder)
+                ->where('warna_aksen', $request->custom_warna_aksen)
+                ->first();
+
+            // Kalau belum ada, buat baru
+            if (!$paletWarna) {
+                $paletWarna = PaletWarna::create([
+                    'nama_palet'     => 'Custom - ' . auth()->user()->name,
+                    'warna_utama'    => $request->custom_warna_utama,
+                    'warna_sekunder' => $request->custom_warna_sekunder,
+                    'warna_aksen'    => $request->custom_warna_aksen,
+                    'kode_hex'       => $request->custom_warna_utama,
+                ]);
+            }
+        } else {
+            $paletWarna = PaletWarna::findOrFail($request->palet_warna_id);
+        }
 
         try {
-            // TAHAP 1: GEMINI MERACIK PROMPT (TEKS)
-            $instruksiGemini = "Sebagai ahli Prompt Engineer, buatkan kalimat bahasa Inggris yang sangat deskriptif untuk AI Image Generator (FLUX). "
-                             . "Tujuannya untuk membuat desain kemasan 3D. "
-                             . "Nama Produk: {$produk->nama_produk}. "
-                             . "Bentuk Kemasan: {$jenisKemasan->nama_kemasan}. "
-                             . "Warna Dominan: {$paletWarna->nama_warna}. "
-                             . "Instruksi dari user: {$request->instruksi_ai}. "
-                             . "Tambahkan kata kunci: realistic packaging mockup, premium branding, modern design, high quality render, studio lighting. "
-                             . "PENTING: Hanya balas dengan teks bahasa Inggrisnya saja, jangan tambahkan penjelasan atau kata pembuka apapun.";
+            $promptTeks = "Buatkan konsep desain kemasan yang detail berdasarkan informasi berikut:
 
-            $promptDariGemini = $this->callGemini(
-                'Kamu adalah asisten ahli yang menulis prompt untuk AI pembuat gambar.', 
-                $instruksiGemini
-            );
+            Nama Produk    : {$produk->nama_produk}
+            Jenis Kemasan  : {$jenisKemasan->nama_kemasan}
+            Palet Warna    : {$paletWarna->nama_warna}
+            Instruksi      : {$request->instruksi_ai}
 
-            // TAHAP 2: FLUX MEMBUAT GAMBAR BERDASARKAN GEMINI
-            $responseFlux = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('services.huggingface.api_key'),
-            ])
-            ->withOptions([
-                'curl' => [CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4] // Paksa IPv4 untuk atasi DNS error
-            ])
-            ->withoutVerifying() // Bypass SSL issue jika ada
-            ->timeout(180) 
-            ->post(
-                'https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell',
-                [
-                    'inputs' => $promptDariGemini
-                ]
-            );
+            Jelaskan: konsep utama, warna dominan, tipografi, elemen visual, tata letak, target market, material, kesan.
+            Buat hasil yang profesional dan mudah dipahami.
+            ";
 
-            if (!$responseFlux->successful()) {
-                return back()->with('error', 'Gagal memproses gambar dari Flux: ' . $responseFlux->body());
-            }
+            $generatedText = "Konsep desain sedang diproses. Silakan cek mockup visual di atas.";
 
-            $filename = 'flux_' . time() . '.png';
-            $filePath = 'designs/' . $filename;
-            
-            Storage::disk('public')->put($filePath, $responseFlux->body());
+            $imagePrompt = $this->generateImagePrompt($produk, $jenisKemasan, $paletWarna);
+            $mockupUrl   = $this->buildPollinationsUrl($imagePrompt);
 
-            // Menyimpan path gambar dan prompt racikan Gemini ke database
             if ($request->desain_id) {
                 $desain = Desain::where('produk_id', $produk->id)->findOrFail($request->desain_id);
                 $desain->update([
                     'jenis_kemasan_id' => $request->jenis_kemasan_id,
-                    'palet_warna_id'   => $request->palet_warna_id,
-                    'hasil_ai'         => $filePath, 
+                    'palet_warna_id'   => $paletWarna->id,
+                    'hasil_ai'         => $generatedText,
+                    'mockup_url'       => $mockupUrl,
                     'status_desain'    => 'generated',
                 ]);
             } else {
                 $desain = Desain::create([
                     'produk_id'        => $produk->id,
                     'jenis_kemasan_id' => $request->jenis_kemasan_id,
-                    'palet_warna_id'   => $request->palet_warna_id,
+                    'palet_warna_id'   => $paletWarna->id,
                     'judul_desain'     => $produk->nama_produk,
                     'status_desain'    => 'generated',
-                    'hasil_ai'         => $filePath, 
+                    'hasil_ai'         => $generatedText,
+                    'mockup_url'       => $mockupUrl,
                 ]);
             }
 
-            return redirect()->route('desain.show', $desain->id)->with('success', 'Gambar kemasan berhasil digenerate oleh kolaborasi Gemini & Flux!');
+            return redirect()->route('desain.show', $desain->id)->with('success', 'Kemasan berhasil digenerate!');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Koneksi terputus: ' . $e->getMessage());
@@ -126,166 +127,60 @@ class DesainController extends Controller
         return redirect()->route('produk.show', $produk_id)->with('success', 'Desain berhasil dihapus!');
     }
 
-    public function generateGemini(Request $request)
+    private function callGroq(string $systemPrompt, string $userPrompt): string
     {
-        $request->validate([
-            'prompt'           => ['required', 'string'],
-            'jenis_kemasan_id' => ['nullable', 'exists:jenis_kemasans,id'],
-            'palet_warna_id'   => ['nullable', 'exists:palet_warnas,id'],
-            'produk_id'        => ['required', 'exists:produks,id']
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.groq.api_key'),
+            'Content-Type'  => 'application/json',
+        ])->post('https://api.groq.com/openai/v1/chat/completions', [
+            'model'    => 'llama-3.3-70b-versatile',
+            'messages' => [
+                ['role' => 'system', 'content' => $systemPrompt],
+                ['role' => 'user',   'content' => $userPrompt],
+            ],
+            'max_tokens' => 1024,
         ]);
 
-        $jenisKemasan = JenisKemasan::find($request->jenis_kemasan_id);
-        $paletWarna = PaletWarna::find($request->palet_warna_id);
-        $produk = Produk::find($request->produk_id);
-
-        $kemasanNama = $jenisKemasan ? $jenisKemasan->nama_kemasan : "Kemasan Standar"; 
-        $warnaNama = $paletWarna ? $paletWarna->nama_warna : "Warna Bebas";
-        $namaProduk = $produk ? $produk->nama_produk : "Produk UMKM";
-        $userPrompt = $request->input('prompt');
-
-        $fullPrompt = "Sebagai ahli Prompt Engineering untuk AI Image Generator (seperti FLUX), "
-                    . "buatkan SATU paragraf prompt berbahasa Inggris yang sangat deskriptif berisi kata kunci (keywords) yang dipisahkan dengan koma untuk menghasilkan gambar desain kemasan 3D yang realistis. "
-                    . "Ramu detail produk UMKM berikut menjadi deskripsi visual:\n"
-                    . "- Nama Produk (sebagai teks pada logo/label): {$namaProduk}\n"
-                    . "- Bentuk/Jenis Wadah: {$kemasanNama}\n"
-                    . "- Palet Warna Dominan: {$warnaNama}\n"
-                    . "- Tema/Instruksi Spesifik: {$userPrompt}\n\n"
-                    . "Wajib tambahkan kata kunci visual berikut ke dalam prompt: realistic 3D packaging mockup, professional commercial product photography, aesthetic, modern minimalist branding, studio lighting, highly detailed, 8k resolution, photorealistic, sharp focus, clean neutral background.\n\n"
-                    . "ATURAN SANGAT PENTING: HANYA balas dengan raw prompt berbahasa Inggris. JANGAN gunakan format poin-poin, JANGAN beri kalimat pembuka/penutup, dan JANGAN gunakan markdown.";
-        
-        $apiKey = config('services.gemini.api_key');
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash:generateContent?key={$apiKey}";
-
-        try {
-            $response = Http::withOptions([
-                'curl' => [CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4] // Paksa IPv4
-            ])
-            ->withoutVerifying()
-            ->post($url, [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $fullPrompt]
-                        ]
-                    ]
-                ]
-            ]);
-
-            if ($response->successful()) {
-                $resultText = $response->json()['candidates'][0]['content']['parts'][0]['text'];
-                
-                return response()->json([
-                    'choices' => [
-                        [
-                            'message' => [
-                                'content' => $resultText
-                            ]
-                        ]
-                    ]
-                ]);
-            }
-
-            return response()->json([
-                'choices' => [['message' => ['content' => 'Error Gemini: ' . $response->body()]]]
-            ], 500);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'choices' => [['message' => ['content' => 'Koneksi terputus: ' . $e->getMessage()]]]
-            ], 500);
+        if (!$response->successful()) {
+            throw new \Exception('Groq Error: ' . $response->body());
         }
+
+        $text = $response->json()['choices'][0]['message']['content'] ?? null;
+
+        if (!$text) {
+            throw new \Exception('AI tidak mengembalikan hasil.');
+        }
+
+        return $text;
     }
 
-    public function generateFlux(Request $request)
+    private function generateMockupUrl(Produk $produk, JenisKemasan $jenisKemasan, PaletWarna $paletWarna): string
     {
-        $request->validate([
-            'prompt' => ['required', 'string'],
-            'produk_id' => ['required', 'exists:produks,id']
-        ]);
+        $prompt = urlencode(
+            "professional product packaging design, " .
+            $jenisKemasan->nama_kemasan . " packaging, " .
+            $produk->nama_produk . " product, " .
+            "color palette " . $paletWarna->warna_utama . " and " . $paletWarna->warna_sekunder . ", " .
+            "minimalist modern design, white background, studio lighting, product mockup"
+        );
 
-        $produk = Produk::findOrFail($request->produk_id);
-
-        $prompt = "
-        Professional 3D packaging design for {$produk->nama_produk},
-        {$request->prompt},
-        realistic packaging mockup,
-        premium branding,
-        modern packaging,
-        high quality render,
-        studio lighting,
-        commercial packaging design
-        ";
-
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('services.huggingface.api_key'),
-            ])
-            ->withOptions([
-                'curl' => [CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4] // Paksa IPv4
-            ])
-            ->withoutVerifying() // Bypass SSL issue jika ada
-            ->timeout(180) 
-            ->post(
-                'https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell',
-                [
-                    'inputs' => $prompt
-                ]
-            );
-
-            if (!$response->successful()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $response->body()
-                ], 500);
-            }
-
-            $filename = 'flux_' . time() . '.png';
-
-            Storage::disk('public')->put(
-                'designs/' . $filename,
-                $response->body()
-            );
-
-            return response()->json([
-                'success' => true,
-                'image_url' => asset('storage/designs/' . $filename)
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
+        return "https://image.pollinations.ai/prompt/{$prompt}?width=512&height=640&nologo=true";
     }
 
-    private function callGemini($systemPrompt, $userPrompt)
+    private function generateImagePrompt(Produk $produk, JenisKemasan $jenisKemasan, PaletWarna $paletWarna): string
     {
-        $apiKey = config('services.gemini.api_key');
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash:generateContent?key={$apiKey}";
+        return "realistic professional product packaging mockup, " .
+            $jenisKemasan->nama_kemasan . " type packaging, " .
+            "product name " . $produk->nama_produk . ", " .
+            ($produk->tagline ? "tagline " . $produk->tagline . ", " : "") .
+            "dominant colors " . $paletWarna->warna_utama . " " . $paletWarna->warna_sekunder . " " . $paletWarna->warna_aksen . ", " .
+            "minimalist modern label design, studio lighting, white background, photorealistic, 8k, commercial product photography";
+    }
 
-        $fullPrompt = $systemPrompt . "\n\n" . $userPrompt;
-
-        $response = Http::withOptions([
-            'curl' => [CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4] // Paksa IPv4
-        ])
-        ->withoutVerifying()
-        ->timeout(60) 
-        ->post($url, [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $fullPrompt]
-                    ]
-                ]
-            ]
-        ]);
-
-        if ($response->successful()) {
-            return $response->json()['candidates'][0]['content']['parts'][0]['text'];
-        }
-
-        throw new \Exception('Gagal menghubungi API Gemini: ' . $response->body());
+    private function buildPollinationsUrl(string $imagePrompt): string
+    {
+        $encoded = rawurlencode($imagePrompt);
+        $seed = rand(1, 999999);
+        return "https://image.pollinations.ai/prompt/{$encoded}?width=768&height=1024&nologo=true&seed={$seed}";
     }
 }

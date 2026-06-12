@@ -54,6 +54,7 @@ Route::middleware(['auth', RoleMiddleware::class . ':superadmin'])
         Route::get('/user/create-admin', [UserController::class, 'createAdmin'])->name('user.create-admin');
         Route::post('/user/store-admin', [UserController::class, 'storeAdmin'])->name('user.store-admin');
         Route::get('/user/{user}/history', [UserController::class, 'history'])->name('user.history');
+        Route::get('/user/{user}/produk', [UserController::class, 'produk'])->name('user.produk');
         Route::post('/user/{id}/approve', [UserController::class, 'approve'])->name('user.approve');
         Route::post('/user/{id}/reject', [UserController::class, 'reject'])->name('user.reject');
         Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
@@ -96,6 +97,11 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])
         Route::post('/user/{id}/approve', [UserController::class, 'approve'])->name('user.approve');
         Route::post('/user/{id}/reject', [UserController::class, 'reject'])->name('user.reject');
         Route::get('/user/{user}/history', [UserController::class, 'history'])->name('user.history');
+        Route::get('/user/{user}/produk', [UserController::class, 'produk'])->name('user.produk');
+
+        Route::get('/kwt/edit', [KwtController::class, 'editSelf'])->name('kwt.edit.self');
+        Route::patch('/kwt/update', [KwtController::class, 'updateSelf'])->name('kwt.update.self');
+        Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 
         // Manage Jenis Kemasan (per KWT)
         Route::get('/jenis-kemasan', [JenisKemasanController::class, 'kwtIndex'])->name('jenis-kemasan.index');

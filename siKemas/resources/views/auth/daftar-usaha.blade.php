@@ -71,20 +71,11 @@
                         </div>
 
                         {{-- FORM --}}
-                        <form method="POST"
-                              action="{{ route('register.business.store') }}"
-                              class="space-y-5">
-
+                        <form method="POST" action="{{ route('register.business.store') }}" class="space-y-5">
                             @csrf
-
                             {{-- NAMA USAHA --}}
                             <div>
-
-                                <x-input-label
-                                    for="nama_usaha"
-                                    :value="__('Nama Usaha')"
-                                />
-
+                                <x-input-label for="nama_usaha" :value="__('Nama Usaha')"/>
                                 <x-text-input
                                     id="nama_usaha"
                                     class="block mt-2 w-full rounded-2xl border-0 bg-gray-100 px-5 py-3.5 focus:ring-2 focus:ring-[#2f6d46]"
@@ -101,7 +92,7 @@
                             <div class="mt-4">
                                 <x-input-label for="kwt_id" :value="__('KWT')" />
                                 <select id="kwt_id" name="kwt_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                    <option value="">-- Pilih KWT --</option>
+                                    <option value="">Pilih KWT</option>
                                     @foreach ($kwts as $kwt)
                                         <option value="{{ $kwt->id }}" {{ old('kwt_id') == $kwt->id ? 'selected' : '' }}>
                                             {{ $kwt->nama_kwt }}

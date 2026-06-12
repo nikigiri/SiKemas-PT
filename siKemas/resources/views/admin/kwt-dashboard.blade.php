@@ -14,8 +14,6 @@
 
     <div class="py-10 min-h-screen bg-gray-50">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            {{-- ===== STATISTIK ===== --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
 
                 {{-- Total User --}}
@@ -93,13 +91,24 @@
                     </a>
 
                     {{-- Info KWT --}}
-                    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <div class="bg-emerald-50 p-3 rounded-xl w-fit mb-5">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
-                            </svg>
+                    <a href="{{ route('kwt-admin.kwt.edit.self') }}"
+                        class="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:-translate-y-1 hover:shadow-lg hover:border-emerald-100 transition-all duration-300">
+                        <div class="flex items-start justify-between mb-5">
+                            <div class="bg-emerald-50 p-3 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+                                </svg>
+                            </div>
+                            <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs font-medium text-emerald-600 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
+                                </svg>
+                                Edit
+                            </span>
                         </div>
-                        <h3 class="text-base font-semibold text-gray-800">Info KWT</h3>
+                        <h3 class="text-base font-semibold text-gray-800 group-hover:text-emerald-600 transition-colors duration-200">
+                            Info KWT
+                        </h3>
                         @if ($kwt)
                             <p class="text-sm text-gray-500 mt-1.5">{{ $kwt->nama_kwt }}</p>
                             <p class="text-xs text-gray-400 mt-1">No: {{ $kwt->no_kwt ?? '-' }}</p>
@@ -108,7 +117,7 @@
                         @else
                             <p class="text-sm text-gray-400 mt-1.5">Data KWT tidak tersedia</p>
                         @endif
-                    </div>
+                    </a>
 
                     {{-- Jenis Kemasan --}}
                     <a href="{{ route('kwt-admin.jenis-kemasan.index') }}"

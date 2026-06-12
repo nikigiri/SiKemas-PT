@@ -121,7 +121,7 @@
                             <x-input-label for="kwt_id" :value="__('KWT yang Dikelola')" class="text-gray-700 font-semibold mb-2" />
                             <select id="kwt_id" name="kwt_id"
                                 class="block w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-green-400 focus:ring-green-400" required>
-                                <option value="">-- Pilih KWT --</option>
+                                <option value=""> Pilih KWT</option>
                                 @foreach ($kwts as $kwt)
                                     <option value="{{ $kwt->id }}" {{ old('kwt_id') == $kwt->id ? 'selected' : '' }}>
                                         {{ $kwt->nama_kwt }}
