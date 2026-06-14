@@ -87,7 +87,7 @@
                                     type="text"
                                     name="no_kwt"
                                     :value="old('no_kwt')"
-                                    placeholder="Contoh: 001/KWT/2024" />
+                                    placeholder="Contoh: 001/KWT/2024" required/>
                             </div>
                             <x-input-error :messages="$errors->get('no_kwt')" class="mt-2" />
                         </div>

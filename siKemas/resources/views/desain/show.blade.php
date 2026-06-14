@@ -15,7 +15,6 @@
 
     <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-
             @if (session('success'))
                 <div class="mb-6 flex items-center p-4 text-sm text-emerald-800 border border-emerald-200 rounded-xl bg-emerald-50 shadow-sm">
                     <svg class="flex-shrink-0 inline w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,11 +23,9 @@
                     <span class="font-medium">{{ session('success') }}</span>
                 </div>
             @endif
-
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-
-                {{-- Info Produk --}}
-                <div class="flex flex-col md:flex-row gap-6 mb-8 pb-8 border-b border-slate-100">
+            <!-- info produk -->
+            <div class="flex flex-col md:flex-row gap-6 mb-8 pb-8 border-b border-slate-100">
                     @if ($desain->produk->gambar_logo)
                         <img src="{{ asset('storage/' . $desain->produk->gambar_logo) }}"
                              alt="{{ $desain->produk->nama_produk }}"
@@ -54,7 +51,7 @@
                     </div>
                 </div>
 
-                {{-- Spesifikasi & Warna --}}
+                <!-- spesifikasi desain -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors">
                         <h4 class="font-semibold text-slate-700 text-sm uppercase tracking-wider mb-4">Spesifikasi Kemasan</h4>
