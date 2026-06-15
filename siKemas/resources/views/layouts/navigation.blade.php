@@ -9,14 +9,28 @@
             <div class="flex items-center gap-10">
 
                 {{-- LOGO --}}
-                <a href="{{ Auth::user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}"
-                   class="flex items-center shrink-0">
+<a href="{{ Auth::user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}"
+   class="flex items-center shrink-0">
 
-                    <img src="{{ asset('images/logo.png') }}"
-                         alt="SiKemas Logo"
-                         class="h-14 w-auto object-contain">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lora:wght@700&display=swap');
+        .logo-sikemas {
+            font-family: 'Lora', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.9rem;
+            letter-spacing: 1px;
+            line-height: 1;
+            user-select: none;
+            background: linear-gradient(to bottom, #22c55e, #15803d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
 
-                </a>
+    <span class="logo-sikemas">SiKemas</span>
+
+</a>
 
                 {{-- ADMIN BADGE (hanya muncul di navbar admin) --}}
                 @if(Auth::user()->hasRole('admin'))

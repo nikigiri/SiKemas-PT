@@ -46,16 +46,28 @@
 
                     <div class="w-full max-w-lg">
 
-                        {{-- LOGO --}}
-                        <div class="flex justify-center mb-6">
+                       {{-- LOGO --}}
+<div class="flex justify-center mb-6">
 
-                            <img
-                                src="{{ asset('images/logo.png') }}"
-                                alt="Logo"
-                                class="w-24 h-24 object-contain"
-                            >
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lora:wght@700&display=swap');
+        .logo-sikemas {
+            font-family: 'Lora', Georgia, serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            line-height: 1;
+            user-select: none;
+            background: linear-gradient(to bottom, #22c55e, #15803d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
 
-                        </div>
+    <span class="logo-sikemas">SiKemas</span>
+
+</div>
 
                         {{-- HEADER --}}
                         <div class="text-center mb-8">

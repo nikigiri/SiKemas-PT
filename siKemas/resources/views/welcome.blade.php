@@ -4,16 +4,28 @@
 
         {{-- NAVBAR --}}
         <nav class="w-full px-6 lg:px-16 py-5 flex items-center justify-between bg-white/80 backdrop-blur-md border-b border-gray-100 fixed top-0 z-50">
+{{-- LOGO --}}
+<div class="flex justify-center mb-6">
 
-            {{-- LOGO --}}
-            <div class="flex items-center gap-3">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lora:wght@700&display=swap');
+        .logo-sikemas {
+            font-family: 'Lora', Georgia, serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            line-height: 1;
+            user-select: none;
+            background: linear-gradient(to bottom, #22c55e, #15803d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
 
-                <img
-                    src="{{ asset('images/logo.png') }}"
-                    alt="Si Kemas"
-                    class="w-12 h-12 object-contain"
-                >
-            </div>
+    <span class="logo-sikemas">SiKemas</span>
+
+</div>
 
             {{-- BUTTON --}}
             <div class="flex items-center gap-4">

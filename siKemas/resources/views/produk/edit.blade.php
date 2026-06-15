@@ -129,7 +129,7 @@
                     <div class="flex items-center justify-between gap-4">
                         <a href="{{ route('produk.show', $produk->id) }}"
                            class="h-14 px-10 inline-flex items-center justify-center rounded-full border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition duration-200">
-                            ← Kembali
+                            Kembali
                         </a>
                         <button type="submit"
                             class="h-14 px-10 inline-flex items-center justify-center rounded-full bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg shadow-green-500/30 transition duration-200">
