@@ -135,51 +135,135 @@ class DesainController extends Controller
 
     // --- PRIVATE METHODS UNTUK AI INTEGRATION ---
 
-    private function generateDesignConcept(Produk $produk, JenisKemasan $jenisKemasan, PaletWarna $paletWarna, ?string $instruksi): string
+    private function generateDesignConcept(
+    Produk $produk,
+    JenisKemasan $jenisKemasan,
+    PaletWarna $paletWarna,
+    ?string $instruksi
+): string
+{
+    $prompt = "
+    Kamu adalah desainer kemasan profesional.
+
+    Produk: {$produk->nama_produk}
+    Jenis Kemasan: {$jenisKemasan->nama_kemasan}
+
+    Warna Utama: {$paletWarna->warna_utama}
+    Warna Sekunder: {$paletWarna->warna_sekunder}
+    Warna Aksen: {$paletWarna->warna_aksen}
+
+    Instruksi tambahan:
+    {$instruksi}
+
+    Buat penjelasan konsep desain kemasan dalam bahasa Indonesia.
+    Jelaskan:
+    1. Konsep utama
+    2. Elemen visual
+    3. Kesan yang ditimbulkan
+
+    Maksimal 2 paragraf.
+    ";
+
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . config('services.openai.api_key'),
+        'Content-Type' => 'application/json',
+    ])->timeout(120)
+      ->post('https://api.openai.com/v1/responses', [
+            'model' => 'gpt-5',
+            'input' => $prompt,
+      ]);
+
+    if ($response->failed()) {
+        throw new \Exception(
+            'OpenAI Text Error: ' . $response->body()
+        );
+    }
+
+    return data_get(
+        $response->json(),
+        'output.0.content.0.text'
+    );
+}
+
+    private function generatePackagingImage(
+        Produk $produk,
+        JenisKemasan $jenisKemasan,
+        PaletWarna $paletWarna,
+        ?string $instruksi
+    ): string
     {
-        $prompt = "Kamu adalah desainer kemasan profesional. Buatkan penjelasan konsep kemasan untuk produk '{$produk->nama_produk}' dengan bentuk kemasan '{$jenisKemasan->nama_kemasan}', menggunakan warna dominan '{$paletWarna->warna_utama}'. Instruksi khusus dari klien: '{$instruksi}'. Jelaskan konsep utama, elemen visual, dan kesan yang ditimbulkan dalam 2 paragraf berbahasa Indonesia yang menarik.";
+        $prompt = "
+        Premium packaging design for {$produk->nama_produk}.
+
+        Packaging type:
+        {$jenisKemasan->nama_kemasan}
+
+        Primary color:
+        {$paletWarna->warna_utama}
+
+        Secondary color:
+        {$paletWarna->warna_sekunder}
+
+        Accent color:
+        {$paletWarna->warna_aksen}
+
+        Additional instructions:
+        {$instruksi}
+
+        Create a luxury packaging mockup.
+        Professional branding.
+        Commercial product photography.
+        Studio lighting.
+        Photorealistic.
+        Modern minimalist design.
+        High-end packaging.
+        Premium materials.
+        Front perspective.
+        Ultra detailed.";
 
         $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.openai.api_key'),
             'Content-Type' => 'application/json',
-        ])->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . config('services.gemini.api_key'), [
-            'contents' => [['parts' => [['text' => $prompt]]]]
+        ])->timeout(300)
+        ->post('https://api.openai.com/v1/images/generations', [
+                'model' => 'gpt-image-1',
+                'prompt' => $prompt,
+                'size' => '1024x1024'
         ]);
 
         if ($response->failed()) {
-            throw new \Exception('Gemini Error: ' . $response->body());
+            throw new \Exception(
+                'OpenAI Image Error: ' . $response->body()
+            );
         }
-        return $response->json('candidates.0.content.parts.0.text');
-    }
 
-    private function generatePackagingImage(Produk $produk, JenisKemasan $jenisKemasan, PaletWarna $paletWarna, ?string $instruksi): string
-    {
-        // 1. Minta Gemini membuatkan Prompt Visual berbahasa Inggris
-        $promptGemini = "You are an expert prompt engineer. Create a highly detailed English prompt for an AI image generator (Flux) to create a product packaging design. Product name: {$produk->nama_produk}, Packaging type: {$jenisKemasan->nama_kemasan}, Main colors: {$paletWarna->warna_utama} and {$paletWarna->warna_sekunder}. Additional notes: {$instruksi}. Focus on photorealism, commercial product photography, studio lighting, and modern minimalist design. Return ONLY the prompt text, no filler words.";
+        $base64Image = data_get(
+            $response->json(),
+            'data.0.b64_json'
+        );
 
-        $geminiResponse = Http::withHeaders([
-            'Content-Type' => 'application/json',
-        ])->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . config('services.gemini.api_key'), [
-            'contents' => [['parts' => [['text' => $promptGemini]]]]
-        ]);
+        if (!$base64Image) {
+            throw new \Exception(
+                'Gambar gagal dibuat oleh OpenAI.'
+            );
+        }
 
-        if ($geminiResponse->failed()) throw new \Exception('Gagal membuat prompt visual dari Gemini.');
-        
-        $englishPrompt = trim(str_replace(["\n", "\r", "*"], " ", $geminiResponse->json('candidates.0.content.parts.0.text')));
+        $imageBinary = base64_decode($base64Image);
 
-        // 2. Kirim Prompt ke FLUX.1-dev
-        $fluxResponse = Http::withHeaders([
-            'Authorization' => 'Bearer ' . config('services.huggingface.api_key'),
-        ])->timeout(120)->post('https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev', [
-            'inputs' => $englishPrompt
-        ]);
+        $imageName =
+            'kemasan_' .
+            Str::random(10) .
+            '_' .
+            time() .
+            '.png';
 
-        if ($fluxResponse->failed()) throw new \Exception('Flux API Error: Server sedang sibuk atau token tidak valid.');
+        Storage::disk('public')->put(
+            'mockups/' . $imageName,
+            $imageBinary
+        );
 
-        // 3. Simpan binary gambar langsung ke storage/app/public/mockups
-        $imageName = 'kemasan_' . Str::random(10) . '_' . time() . '.png';
-        Storage::disk('public')->put('mockups/' . $imageName, $fluxResponse->body());
-
-        // Kembalikan URL publik untuk disimpan ke database
-        return Storage::url('mockups/' . $imageName);
+        return Storage::url(
+            'mockups/' . $imageName
+        );
     }
 }

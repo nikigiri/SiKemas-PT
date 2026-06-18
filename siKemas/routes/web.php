@@ -15,33 +15,8 @@ use Spatie\Permission\Middleware\RoleMiddleware;
 use App\Models\Produk;
 use Illuminate\Support\Facades\Http;
 
-// --- ROUTE OPENAI ---
-// use App\Http\Controllers\AIController;
-// Route::post('/generate-ai', [AIController::class, 'generate']);
-// ----------------------------------------------------
-
-Route::get('/test-flux', function () {
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . config('services.huggingface.api_key'),
-    ])->timeout(120)->post(
-        'https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell',
-        [
-            'inputs' => 'A premium product packaging design, high quality, studio lighting' 
-        ]
-    );
-
-    if ($response->successful()) {
-        return response(
-            $response->body(),
-            200,
-            ['Content-Type' => 'image/png']
-        );
-    }
-
-    return response()->json([
-        'status' => 'Gagal generate gambar',
-        'error_detail' => $response->json()
-    ], $response->status());
+Route::get('/', function () {
+    return view('welcome');
 });
 
 Route::get('/', function () {
@@ -150,17 +125,6 @@ Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
 
         Route::get('/desain/{id}/export', [DesainController::class, 'exportPdf'])->name('desain.export');
         
-        // --- ROUTE OPENAI LAMA  ---
-        // Route::post('/generate-ai',
-        //     [DesainController::class, 'generateAjax']
-        // )->name('desain.generate-ajax');
-        // --------------------------------------
-
-        // --- ROUTE GEMINI API ---
-        Route::post('/generate-ai',
-            [DesainController::class, 'generateGemini']
-        )->name('desain.generate-gemini');
-        // -----------------------------------
     });
 
 
@@ -184,6 +148,23 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisteredUserController::class, 'storeStep1'])->name('register.store');
     Route::get('/register/business', [RegisteredUserController::class, 'createBusiness'])->name('register.business');
     Route::post('/register/business', [RegisteredUserController::class, 'storeBusiness'])->name('register.business.store');
+});
+
+Route::get('/test-openai', function () {
+
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . config('services.openai.api_key'),
+        'Content-Type' => 'application/json',
+    ])->post('https://api.openai.com/v1/responses', [
+        'model' => 'gpt-5',
+        'input' => 'Halo'
+    ]);
+
+    return $response->json();
+});
+
+Route::get('/cek-key', function () {
+    dd(config('services.openai.api_key'));
 });
 
 require __DIR__ . '/auth.php';
