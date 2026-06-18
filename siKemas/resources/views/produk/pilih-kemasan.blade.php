@@ -20,12 +20,7 @@
 
             {{-- Form sekarang langsung diarahkan ke desain.store --}}
             <form id="formGenerate" method="POST" action="{{ route('desain.store') }}" onsubmit="tampilkanLoading()">
-            <form id="formGenerate" method="POST" action="{{ route('desain.store') }}"
-                onsubmit="document.getElementById('loadingIndicator').classList.remove('hidden');
-                document.getElementById('btnSubmit').disabled = true;
-                document.getElementById('btnSubmit').innerHTML = 'Memproses...';">
-
-
+        
                 @csrf
                 <input type="hidden" name="produk_id" value="{{ $produk->id }}">
 
@@ -280,8 +275,6 @@
 
                 {{-- Actions --}}
                 <div class="flex items-center justify-between">
-
-                    <a href="{{ route('produk.create') }}"
 
                     <a href="{{ route('produk.show', $produk->id) }}"
                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600

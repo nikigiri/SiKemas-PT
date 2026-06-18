@@ -10,43 +10,103 @@ class AIController extends Controller
     public function generate(Request $request)
     {
         try {
+
             $request->validate([
                 'prompt' => 'required|string|max:1000'
             ]);
 
-            // 1. Hit Gemini
-            $geminiInstruction = "You are an expert prompt engineer. Convert this user idea into a highly detailed, descriptive, and visually rich English prompt for generating a product packaging design. Only return the prompt text. User idea: " . $request->prompt;
+            $promptEngineerResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . config('services.openai.api_key'),
+                'Content-Type'  => 'application/json',
+            ])->post(
+                'https://api.openai.com/v1/responses',
+                [
+                    'model' => config('services.openai.model'),
+                    'input' => "
+                    You are an expert packaging design prompt engineer.
 
-            $geminiResponse = Http::withHeaders([
-                'Content-Type' => 'application/json',
-            ])->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . config('services.gemini.api_key'), [
-                'contents' => [['parts' => [['text' => $geminiInstruction]]]]
-            ]);
+                    Convert the following user idea into a highly detailed
+                    English image generation prompt.
 
-            if ($geminiResponse->failed()) throw new \Exception('Gemini API Error');
+                    Focus on:
+                    - packaging design
+                    - branding
+                    - typography
+                    - premium materials
+                    - lighting
+                    - composition
+                    - photorealistic product mockup
 
-            $enhancedPrompt = trim(str_replace(["\n", "\r", "*"], " ", $geminiResponse->json('candidates.0.content.parts.0.text')));
+                    Return ONLY the prompt.
 
-            // 2. Hit Flux
-            $fluxResponse = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('services.huggingface.api_key'),
-            ])->timeout(120)->post('https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev', [
-                'inputs' => $enhancedPrompt
-            ]);
+                    User Idea:
+                    {$request->prompt}
+                    "
+                ]
+            );
 
-            if ($fluxResponse->failed()) throw new \Exception('Flux API Error');
+            if ($promptEngineerResponse->failed()) {
+                throw new \Exception(
+                    'OpenAI Prompt Error: ' .
+                    $promptEngineerResponse->body()
+                );
+            }
 
-            // 3. Return Base64 Image
+            $enhancedPrompt = data_get(
+                $promptEngineerResponse->json(),
+                'output.0.content.0.text'
+            );
+
+            if (!$enhancedPrompt) {
+                throw new \Exception(
+                    'Prompt AI gagal dibuat.'
+                );
+            }
+
+            $imageResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . config('services.openai.api_key'),
+                'Content-Type'  => 'application/json',
+            ])->timeout(180)
+            ->post(
+                'https://api.openai.com/v1/images/generations',
+                [
+                    'model'  => 'gpt-image-1',
+                    'prompt' => $enhancedPrompt,
+                    'size'   => '1024x1024'
+                ]
+            );
+
+            if ($imageResponse->failed()) {
+                throw new \Exception(
+                    'OpenAI Image Error: ' .
+                    $imageResponse->body()
+                );
+            }
+
+            $base64Image = data_get(
+                $imageResponse->json(),
+                'data.0.b64_json'
+            );
+
+            if (!$base64Image) {
+                throw new \Exception(
+                    'Gambar gagal dibuat.'
+                );
+            }
+
             return response()->json([
                 'status' => true,
-                'image_url' => 'data:image/png;base64,' . base64_encode($fluxResponse->body())
+                'prompt' => $enhancedPrompt,
+                'image_url' => 'data:image/png;base64,' . $base64Image
             ]);
 
         } catch (\Exception $e) {
+
             return response()->json([
                 'status' => false,
-                'message' => $e->getMessage(),
+                'message' => $e->getMessage()
             ], 500);
+
         }
     }
 }

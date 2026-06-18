@@ -14,10 +14,7 @@ use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use App\Models\Produk;
 use Illuminate\Support\Facades\Http;
-
-Route::get('/', function () {
-    return view('welcome');
-});
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
@@ -150,20 +147,34 @@ Route::middleware('guest')->group(function () {
     Route::post('/register/business', [RegisteredUserController::class, 'storeBusiness'])->name('register.business.store');
 });
 
-Route::get('/test-openai', function () {
+Route::middleware(['auth'])->post('/generate-desain', function (Request $request) {
+
+    $prompt = "
+    Anggap kamu sebagai desainer kemasan profesional.
+
+    Nama Produk: {$request->nama_produk}
+    Jenis Kemasan: {$request->jenis_kemasan}
+    Warna Kemasan: {$request->warna_kemasan}
+
+    Instruksi Tambahan:
+    {$request->prompt_tambahan}
+
+    Buatkan konsep desain kemasan yang detail dan profesional.
+    ";
 
     $response = Http::withHeaders([
         'Authorization' => 'Bearer ' . config('services.openai.api_key'),
         'Content-Type' => 'application/json',
     ])->post('https://api.openai.com/v1/responses', [
-        'model' => 'gpt-5',
-        'input' => 'Halo'
+        'model' => 'gpt-5.4',
+        'input' => $prompt,
     ]);
 
     return $response->json();
 });
 
 Route::get('/cek-key', function () {
+    abort_unless(app()->isLocal(), 403);
     dd(config('services.openai.api_key'));
 });
 

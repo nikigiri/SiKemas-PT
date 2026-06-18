@@ -29,9 +29,10 @@ class DesainController extends Controller
         $request->validate([
             'produk_id'             => ['required', 'exists:produks,id'],
             'jenis_kemasan_id'      => ['required', 'exists:jenis_kemasans,id'],
-            'palet_warna_id'        => ['nullable', 'exists:palet_warnas,id'],
-            'instruksi_ai'          => ['nullable', 'string'],
+            'palet_warna_id'        => ['required', 'exists:palet_warnas,id'],
+            'instruksi_ai'          => ['required', 'string'],
             'desain_id'             => ['nullable', 'exists:desains,id'],
+            'use_custom_color'      => ['nullable', 'boolean'],
             'custom_warna_utama'    => ['required_if:use_custom_color,1', 'nullable', 'string'],
             'custom_warna_sekunder' => ['required_if:use_custom_color,1', 'nullable', 'string'],
             'custom_warna_aksen'    => ['required_if:use_custom_color,1', 'nullable', 'string'],
@@ -58,6 +59,9 @@ class DesainController extends Controller
                     ]
                 );
             } else {
+                if (!$request->palet_warna_id) {
+                    throw new \Exception('Pilih palet warna.');
+                }
                 $paletWarna = PaletWarna::findOrFail($request->palet_warna_id);
             }
 
@@ -101,6 +105,8 @@ class DesainController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Desain Generate Error: ' . $e->getMessage());
+            \Log::error($e->getTraceAsString());
             return back()->with('error', 'Proses gagal: ' . $e->getMessage());
         }
     }
@@ -135,7 +141,7 @@ class DesainController extends Controller
 
     // --- PRIVATE METHODS UNTUK AI INTEGRATION ---
 
-    private function generateDesignConcept(
+    private function createImagePrompt(
     Produk $produk,
     JenisKemasan $jenisKemasan,
     PaletWarna $paletWarna,
@@ -143,39 +149,55 @@ class DesainController extends Controller
 ): string
 {
     $prompt = "
-    Kamu adalah desainer kemasan profesional.
+    Kamu adalah prompt engineer profesional untuk AI Image Generation.
 
-    Produk: {$produk->nama_produk}
-    Jenis Kemasan: {$jenisKemasan->nama_kemasan}
+    Produk:
+    {$produk->nama_produk}
 
-    Warna Utama: {$paletWarna->warna_utama}
-    Warna Sekunder: {$paletWarna->warna_sekunder}
-    Warna Aksen: {$paletWarna->warna_aksen}
+    Jenis Kemasan:
+    {$jenisKemasan->nama_kemasan}
 
-    Instruksi tambahan:
+    Warna Utama:
+    {$paletWarna->warna_utama}
+
+    Warna Sekunder:
+    {$paletWarna->warna_sekunder}
+
+    Warna Aksen:
+    {$paletWarna->warna_aksen}
+
+    Instruksi Tambahan:
     {$instruksi}
 
-    Buat penjelasan konsep desain kemasan dalam bahasa Indonesia.
-    Jelaskan:
-    1. Konsep utama
-    2. Elemen visual
-    3. Kesan yang ditimbulkan
+    Buat prompt bahasa Inggris yang sangat detail untuk menghasilkan mockup kemasan produk profesional.
 
-    Maksimal 2 paragraf.
+    Fokus pada:
+    - branding premium
+    - komposisi visual
+    - tipografi
+    - warna
+    - material kemasan
+    - studio lighting
+    - photorealistic
+    - commercial product photography
+
+    Keluarkan hanya promptnya saja.
     ";
 
     $response = Http::withHeaders([
         'Authorization' => 'Bearer ' . config('services.openai.api_key'),
         'Content-Type' => 'application/json',
-    ])->timeout(120)
-      ->post('https://api.openai.com/v1/responses', [
-            'model' => 'gpt-5',
+    ])->post(
+        'https://api.openai.com/v1/responses',
+        [
+            'model' => 'gpt-5.4',
             'input' => $prompt,
-      ]);
+        ]
+    );
 
     if ($response->failed()) {
         throw new \Exception(
-            'OpenAI Text Error: ' . $response->body()
+            'OpenAI Prompt Error: ' . $response->body()
         );
     }
 
@@ -185,85 +207,95 @@ class DesainController extends Controller
     );
 }
 
-    private function generatePackagingImage(
+    private function generateDesignConcept(
         Produk $produk,
         JenisKemasan $jenisKemasan,
         PaletWarna $paletWarna,
         ?string $instruksi
-    ): string
+        ): string
     {
         $prompt = "
-        Premium packaging design for {$produk->nama_produk}.
+        Kamu adalah desainer kemasan profesional.
 
-        Packaging type:
-        {$jenisKemasan->nama_kemasan}
+        Produk: {$produk->nama_produk}
+        Jenis Kemasan: {$jenisKemasan->nama_kemasan}
 
-        Primary color:
-        {$paletWarna->warna_utama}
+        Warna Utama: {$paletWarna->warna_utama}
+        Warna Sekunder: {$paletWarna->warna_sekunder}
+        Warna Aksen: {$paletWarna->warna_aksen}
 
-        Secondary color:
-        {$paletWarna->warna_sekunder}
-
-        Accent color:
-        {$paletWarna->warna_aksen}
-
-        Additional instructions:
+        Instruksi tambahan:
         {$instruksi}
 
-        Create a luxury packaging mockup.
-        Professional branding.
-        Commercial product photography.
-        Studio lighting.
-        Photorealistic.
-        Modern minimalist design.
-        High-end packaging.
-        Premium materials.
-        Front perspective.
-        Ultra detailed.";
+        Buat penjelasan konsep desain kemasan dalam bahasa Indonesia.
+        Jelaskan:
+        1. Konsep utama
+        2. Elemen visual
+        3. Kesan yang ditimbulkan
+
+        Maksimal 2 paragraf.
+        ";
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . config('services.openai.api_key'),
             'Content-Type' => 'application/json',
-        ])->timeout(300)
-        ->post('https://api.openai.com/v1/images/generations', [
-                'model' => 'gpt-image-1',
-                'prompt' => $prompt,
-                'size' => '1024x1024'
+        ])->timeout(120)
+        ->post('https://api.openai.com/v1/chat/completions', [
+            'model' => config('services.openai.model'), 
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ],
         ]);
 
         if ($response->failed()) {
             throw new \Exception(
-                'OpenAI Image Error: ' . $response->body()
+                'OpenAI Text Error: ' . $response->body()
             );
         }
 
-        $base64Image = data_get(
-            $response->json(),
-            'data.0.b64_json'
-        );
+        return data_get($response->json(), 'choices.0.message.content');
+    }
+
+        private function generatePackagingImage(
+        Produk $produk,
+        JenisKemasan $jenisKemasan,
+        PaletWarna $paletWarna,
+        ?string $instruksi
+    ): string {
+        $prompt = $this->createImagePrompt($produk, $jenisKemasan, $paletWarna, $instruksi);
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.openai.api_key'),
+            'Content-Type'  => 'application/json',
+        ])->timeout(120)
+        ->post('https://api.openai.com/v1/images/generations', [
+            'model'         => 'gpt-image-1',
+            'prompt'        => $prompt,
+            'output_format' => 'png',  
+        ]);
+
+        if ($response->failed()) {
+            throw new \Exception('OpenAI Image Error: ' . $response->body());
+        }
+
+        // gpt-image-1 tetap return b64_json meski output_format = 'png'
+        $base64Image = data_get($response->json(), 'data.0.b64_json');
 
         if (!$base64Image) {
-            throw new \Exception(
-                'Gambar gagal dibuat oleh OpenAI.'
-            );
+            // Fallback: coba ambil URL langsung jika ada
+            $imageUrl = data_get($response->json(), 'data.0.url');
+            if ($imageUrl) {
+                return $imageUrl; // simpan URL langsung tanpa download
+            }
+            throw new \Exception('Gambar gagal dibuat oleh OpenAI. Response: ' . $response->body());
         }
 
+        // Simpan ke storage
         $imageBinary = base64_decode($base64Image);
+        $imageName   = 'kemasan_' . Str::random(10) . '_' . time() . '.png';
 
-        $imageName =
-            'kemasan_' .
-            Str::random(10) .
-            '_' .
-            time() .
-            '.png';
+        Storage::disk('public')->put('mockups/' . $imageName, $imageBinary);
 
-        Storage::disk('public')->put(
-            'mockups/' . $imageName,
-            $imageBinary
-        );
-
-        return Storage::url(
-            'mockups/' . $imageName
-        );
+        return Storage::url('mockups/' . $imageName);
     }
 }
