@@ -17,6 +17,7 @@ class Desain extends Model
         'status_desain',
         'preview_file',
         'hasil_ai',
+        'mockup_url',
     ];
 
     // Relasi ke Produk

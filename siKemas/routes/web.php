@@ -149,6 +149,13 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware(['auth'])->post('/generate-desain', function (Request $request) {
 
+    $request->validate([
+        'nama_produk' => 'required|string|max:255',
+        'jenis_kemasan' => 'required|string|max:255',
+        'warna_kemasan' => 'required|string|max:255',
+        'prompt_tambahan' => 'nullable|string',
+    ]);
+
     $prompt = "
     Anggap kamu sebagai desainer kemasan profesional.
 
@@ -165,17 +172,22 @@ Route::middleware(['auth'])->post('/generate-desain', function (Request $request
     $response = Http::withHeaders([
         'Authorization' => 'Bearer ' . config('services.openai.api_key'),
         'Content-Type' => 'application/json',
-    ])->post('https://api.openai.com/v1/responses', [
-        'model' => 'gpt-5.4',
-        'input' => $prompt,
+    ])->post('https://api.openai.com/v1/chat/completions', [
+        'model' => config('services.openai.model'),
+        'messages' => [
+            ['role' => 'user', 'content' => $prompt]
+        ],
     ]);
 
-    return $response->json();
+    return response()->json([
+        'status' => true,
+        'hasil' => $response->json('choices.0.message.content')
+    ]);
 });
 
 Route::get('/cek-key', function () {
     abort_unless(app()->isLocal(), 403);
     dd(config('services.openai.api_key'));
 });
-
+    
 require __DIR__ . '/auth.php';

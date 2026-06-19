@@ -29,7 +29,7 @@ class DesainController extends Controller
         $request->validate([
             'produk_id'             => ['required', 'exists:produks,id'],
             'jenis_kemasan_id'      => ['required', 'exists:jenis_kemasans,id'],
-            'palet_warna_id'        => ['required', 'exists:palet_warnas,id'],
+            'palet_warna_id'        => ['nullable', 'exists:palet_warnas,id'],
             'instruksi_ai'          => ['required', 'string'],
             'desain_id'             => ['nullable', 'exists:desains,id'],
             'use_custom_color'      => ['nullable', 'boolean'],
@@ -106,8 +106,7 @@ class DesainController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Desain Generate Error: ' . $e->getMessage());
-            \Log::error($e->getTraceAsString());
-            return back()->with('error', 'Proses gagal: ' . $e->getMessage());
+            return back()->with('error', $e->getMessage()); // tampilkan full error di flash
         }
     }
     
@@ -146,65 +145,44 @@ class DesainController extends Controller
     JenisKemasan $jenisKemasan,
     PaletWarna $paletWarna,
     ?string $instruksi
-): string
-{
+): string {
     $prompt = "
     Kamu adalah prompt engineer profesional untuk AI Image Generation.
 
-    Produk:
-    {$produk->nama_produk}
-
-    Jenis Kemasan:
-    {$jenisKemasan->nama_kemasan}
-
-    Warna Utama:
-    {$paletWarna->warna_utama}
-
-    Warna Sekunder:
-    {$paletWarna->warna_sekunder}
-
-    Warna Aksen:
-    {$paletWarna->warna_aksen}
-
-    Instruksi Tambahan:
-    {$instruksi}
+    Produk: {$produk->nama_produk}
+    Jenis Kemasan: {$jenisKemasan->nama_kemasan}
+    Warna Utama: {$paletWarna->warna_utama}
+    Warna Sekunder: {$paletWarna->warna_sekunder}
+    Warna Aksen: {$paletWarna->warna_aksen}
+    Instruksi Tambahan: {$instruksi}
 
     Buat prompt bahasa Inggris yang sangat detail untuk menghasilkan mockup kemasan produk profesional.
-
-    Fokus pada:
-    - branding premium
-    - komposisi visual
-    - tipografi
-    - warna
-    - material kemasan
-    - studio lighting
-    - photorealistic
-    - commercial product photography
-
+    Fokus pada: branding premium, komposisi visual, tipografi, warna, material kemasan, studio lighting, photorealistic, commercial product photography.
     Keluarkan hanya promptnya saja.
     ";
 
     $response = Http::withHeaders([
         'Authorization' => 'Bearer ' . config('services.openai.api_key'),
-        'Content-Type' => 'application/json',
-    ])->post(
-        'https://api.openai.com/v1/responses',
-        [
-            'model' => 'gpt-5.4',
-            'input' => $prompt,
-        ]
-    );
+        'Content-Type'  => 'application/json',
+    ])->timeout(60)
+    ->post('https://api.openai.com/v1/chat/completions', [  
+        'model'    => config('services.openai.model'),       
+        'messages' => [
+            ['role' => 'user', 'content' => $prompt]
+        ],
+    ]);
 
     if ($response->failed()) {
-        throw new \Exception(
-            'OpenAI Prompt Error: ' . $response->body()
-        );
+        throw new \Exception('OpenAI Prompt Error: ' . $response->body());
     }
 
-    return data_get(
-        $response->json(),
-        'output.0.content.0.text'
-    );
+    $result = data_get($response->json(), 'choices.0.message.content'); // ✅ path benar
+
+    if (!$result) {
+        throw new \Exception('Prompt AI gagal dibuat. Response: ' . $response->body());
+    }
+
+    return $result;
 }
 
     private function generateDesignConcept(
@@ -212,51 +190,45 @@ class DesainController extends Controller
         JenisKemasan $jenisKemasan,
         PaletWarna $paletWarna,
         ?string $instruksi
-        ): string
-    {
-        $prompt = "
-        Kamu adalah desainer kemasan profesional.
+    ): string {
+        $prompt = "Kamu adalah desainer kemasan profesional.
 
         Produk: {$produk->nama_produk}
         Jenis Kemasan: {$jenisKemasan->nama_kemasan}
-
         Warna Utama: {$paletWarna->warna_utama}
         Warna Sekunder: {$paletWarna->warna_sekunder}
         Warna Aksen: {$paletWarna->warna_aksen}
-
-        Instruksi tambahan:
-        {$instruksi}
+        Instruksi tambahan: {$instruksi}
 
         Buat penjelasan konsep desain kemasan dalam bahasa Indonesia.
-        Jelaskan:
-        1. Konsep utama
-        2. Elemen visual
-        3. Kesan yang ditimbulkan
-
-        Maksimal 2 paragraf.
-        ";
+        Jelaskan: 1. Konsep utama, 2. Elemen visual, 3. Kesan yang ditimbulkan.
+        Maksimal 2 paragraf.";
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . config('services.openai.api_key'),
-            'Content-Type' => 'application/json',
-        ])->timeout(120)
-        ->post('https://api.openai.com/v1/chat/completions', [
-            'model' => config('services.openai.model'), 
-            'messages' => [
-                ['role' => 'user', 'content' => $prompt]
+            'Content-Type'  => 'application/json',
+        ])  ->timeout(120)
+            ->post('https://api.openai.com/v1/chat/completions', [
+                'model'    => config('services.openai.model'),
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt]
             ],
         ]);
 
         if ($response->failed()) {
-            throw new \Exception(
-                'OpenAI Text Error: ' . $response->body()
-            );
+            throw new \Exception('OpenAI Text Error: ' . $response->body());
         }
 
-        return data_get($response->json(), 'choices.0.message.content');
+        $result = data_get($response->json(), 'choices.0.message.content');
+
+        if (!$result) {
+            throw new \Exception('Teks konsep gagal dibuat. Response: ' . $response->body());
+        }
+
+        return $result;
     }
 
-        private function generatePackagingImage(
+    private function generatePackagingImage(
         Produk $produk,
         JenisKemasan $jenisKemasan,
         PaletWarna $paletWarna,
@@ -269,28 +241,20 @@ class DesainController extends Controller
             'Content-Type'  => 'application/json',
         ])->timeout(120)
         ->post('https://api.openai.com/v1/images/generations', [
-            'model'         => 'gpt-image-1',
-            'prompt'        => $prompt,
-            'output_format' => 'png',  
+            'model'  => 'gpt-image-1', // 
+            'prompt' => $prompt,
         ]);
 
         if ($response->failed()) {
             throw new \Exception('OpenAI Image Error: ' . $response->body());
         }
 
-        // gpt-image-1 tetap return b64_json meski output_format = 'png'
         $base64Image = data_get($response->json(), 'data.0.b64_json');
 
         if (!$base64Image) {
-            // Fallback: coba ambil URL langsung jika ada
-            $imageUrl = data_get($response->json(), 'data.0.url');
-            if ($imageUrl) {
-                return $imageUrl; // simpan URL langsung tanpa download
-            }
-            throw new \Exception('Gambar gagal dibuat oleh OpenAI. Response: ' . $response->body());
+            throw new \Exception('Gambar gagal dibuat. Response: ' . $response->body());
         }
 
-        // Simpan ke storage
         $imageBinary = base64_decode($base64Image);
         $imageName   = 'kemasan_' . Str::random(10) . '_' . time() . '.png';
 
