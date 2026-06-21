@@ -17,8 +17,7 @@
                           hover:bg-emerald-50 hover:border-emerald-300 transition duration-200">
                     <svg class="w-4 h-4 text-gray-500 group-hover:text-emerald-700 transition"
                          fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
                     </svg>
                 </a>
                 <div>
@@ -31,17 +30,37 @@
                 </div>
             </div>
 
-            <a href="{{ route('produk.edit', $produk->id) }}"
-               class="inline-flex items-center gap-2 px-4 py-2.5
-                      border border-emerald-600 text-emerald-700
-                      rounded-xl hover:bg-emerald-50 hover:border-emerald-700
-                      text-sm font-semibold transition duration-200">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"/>
-                </svg>
-                Edit Produk
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('produk.edit', $produk->id) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2.5
+                          border border-emerald-600 text-emerald-700
+                          rounded-xl hover:bg-emerald-50 hover:border-emerald-700
+                          text-sm font-semibold transition duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"/>
+                    </svg>
+                    Edit Produk
+                </a>
+
+                <form method="POST" action="{{ route('produk.destroy', $produk->id) }}"
+                      onsubmit="return confirm('Yakin hapus produk ini? Semua desainnya juga akan terhapus!')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-4 py-2.5
+                                   bg-red-50 text-red-600 border border-red-200
+                                   rounded-xl hover:bg-red-600 hover:text-white
+                                   hover:border-red-600 text-sm font-semibold
+                                   transition duration-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                        </svg>
+                        Hapus Produk
+                    </button>
+                </form>
+            </div>
         </div>
     </x-slot>
 
@@ -53,7 +72,6 @@
         .fu  { animation: fadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
         .fu1 { animation-delay: 0.04s; }
         .fu2 { animation-delay: 0.12s; }
-        .fu3 { animation-delay: 0.20s; }
 
         .detail-root * { font-family: 'DM Sans', sans-serif; }
         .detail-root h1,
@@ -71,17 +89,6 @@
             background: #F0FDF4;
         }
 
-        .badge-generated { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
-        .badge-exported   { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
-        .badge-default    { background: #F9FAFB; color: #6B7280; border: 1px solid #E5E7EB; }
-
-        .btn-lihat {
-            background: #ECFDF5; color: #065F46;
-            border: 1px solid #A7F3D0;
-            transition: background 0.15s, border-color 0.15s;
-        }
-        .btn-lihat:hover { background: #D1FAE5; border-color: #6EE7B7; }
-
         .btn-hapus-desain {
             background: #FEF2F2; color: #DC2626;
             border: 1px solid #FECACA;
@@ -92,7 +99,6 @@
         }
     </style>
 
-    {{-- ✅ bg-gray-50 = background default Breeze, tidak diubah --}}
     <div class="detail-root py-10 min-h-screen bg-gray-50">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
@@ -114,7 +120,6 @@
 
             {{-- ── INFO PRODUK ── --}}
             <div class="fu fu1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-
                 <div class="p-6">
                     <div class="flex gap-6">
 
@@ -141,7 +146,6 @@
                         @endif
 
                         <div class="flex-1 min-w-0">
-
                             <span class="inline-block text-[10px] uppercase tracking-widest font-bold
                                          bg-emerald-50 text-emerald-700 border border-emerald-200
                                          px-3 py-1 rounded-full">
@@ -181,7 +185,6 @@
 
             {{-- ── RIWAYAT DESAIN ── --}}
             <div class="fu fu2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-6">
                         <div>
@@ -199,8 +202,7 @@
                                   transition duration-200">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                  stroke-width="2.2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M12 4.5v15m7.5-7.5h-15"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
                             </svg>
                             Generate Baru
                         </a>
@@ -229,107 +231,67 @@
                     @else
                         <div class="space-y-2.5">
                             @foreach ($produk->desains->sortByDesc('created_at') as $desain)
+                                <a href="{{ route('desain.show', $desain->id) }}"
+                                   class="desain-row flex items-center gap-4 p-4
+                                          border border-gray-100 rounded-xl group block">
 
-                                <div class="desain-row flex items-center gap-4 p-4
-                                            border border-gray-100 rounded-xl">
-
+                                    {{-- Swatch Warna --}}
                                     <div class="flex rounded-lg overflow-hidden h-11 w-20 shrink-0
                                                 shadow-sm border border-gray-100">
-                                        <div class="flex-1"
-                                             style="background-color: {{ $desain->paletWarna->warna_utama }}"></div>
-                                        <div class="flex-1"
-                                             style="background-color: {{ $desain->paletWarna->warna_sekunder }}"></div>
-                                        <div class="flex-1"
-                                             style="background-color: {{ $desain->paletWarna->warna_aksen }}"></div>
+                                        <div class="flex-1" style="background-color: {{ $desain->paletWarna->warna_utama }}"></div>
+                                        <div class="flex-1" style="background-color: {{ $desain->paletWarna->warna_sekunder }}"></div>
+                                        <div class="flex-1" style="background-color: {{ $desain->paletWarna->warna_aksen }}"></div>
                                     </div>
 
+                                    {{-- Info --}}
                                     <div class="flex-1 min-w-0">
-                                        <p class="font-semibold text-gray-800 text-sm truncate">
+                                        <p class="font-semibold text-gray-800 text-sm truncate group-hover:text-emerald-700 transition">
                                             {{ $desain->jenisKemasan->nama_kemasan }}
                                         </p>
                                         <p class="text-xs text-gray-500 mt-0.5">
                                             {{ $desain->paletWarna->nama_palet }}
                                         </p>
-                                        <p class="text-xs text-gray-400 mt-0.5">
+                                        <p class="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                            </svg>
                                             {{ $desain->created_at->diffForHumans() }}
                                         </p>
                                     </div>
 
-                                    @php
-                                        $badgeClass = match($desain->status_desain) {
-                                            'generated' => 'badge-generated',
-                                            'exported'  => 'badge-exported',
-                                            default     => 'badge-default',
-                                        };
-                                    @endphp
-                                    <span class="text-[10px] font-bold uppercase tracking-wider
-                                                 px-2.5 py-1 rounded-full shrink-0 {{ $badgeClass }}">
-                                        {{ ucfirst($desain->status_desain) }}
-                                    </span>
+                                    {{-- Arrow --}}
+                                    <div class="shrink-0 w-8 h-8 rounded-lg bg-gray-50 group-hover:bg-emerald-50
+                                                border border-gray-100 group-hover:border-emerald-200
+                                                flex items-center justify-center transition">
+                                        <svg class="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition"
+                                             fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                                        </svg>
+                                    </div>
 
-                                    <div class="flex gap-2 shrink-0">
-                                        <a href="{{ route('desain.show', $desain->id) }}"
-                                           class="btn-lihat inline-flex items-center gap-1.5
-                                                  px-3 py-1.5 rounded-lg text-xs font-semibold">
+                                    {{-- Tombol Hapus --}}
+                                    <form method="POST"
+                                          action="{{ route('desain.destroy', $desain->id) }}"
+                                          onclick="event.preventDefault(); event.stopPropagation();"
+                                          onsubmit="event.stopPropagation(); return confirm('Yakin hapus desain ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                onclick="event.stopPropagation(); this.closest('form').dispatchEvent(new Event('submit'));"
+                                                class="btn-hapus-desain inline-flex items-center gap-1.5
+                                                       px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
                                                  stroke-width="2" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/>
+                                                      d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
                                             </svg>
-                                            Edit
-                                        </a>
-
-                                        <form method="POST"
-                                              action="{{ route('desain.destroy', $desain->id) }}"
-                                              onsubmit="return confirm('Yakin hapus desain ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="btn-hapus-desain inline-flex items-center gap-1.5
-                                                           px-3 py-1.5 rounded-lg text-xs font-semibold">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                                     stroke-width="2" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
-                                                </svg>
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </a>
                             @endforeach
                         </div>
                     @endif
-                </div>
-            </div>
-
-            {{-- ── DANGER ZONE ── --}}
-            <div class="fu fu3 bg-white rounded-2xl shadow-sm border border-red-100 overflow-hidden">
-                <div class="p-5 flex items-center justify-between gap-4">
-                    <div>
-                        <p class="text-sm font-bold text-red-600">Hapus Produk</p>
-                        <p class="text-xs text-gray-400 mt-0.5">
-                            Semua desain terkait akan ikut terhapus secara permanen.
-                        </p>
-                    </div>
-                    <form method="POST" action="{{ route('produk.destroy', $produk->id) }}"
-                          onsubmit="return confirm('Yakin hapus produk ini? Semua desainnya juga akan terhapus!')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2.5
-                                       bg-red-50 text-red-600 border border-red-200
-                                       rounded-xl hover:bg-red-600 hover:text-white
-                                       hover:border-red-600 text-sm font-semibold
-                                       transition duration-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                 stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
-                            </svg>
-                            Hapus Produk
-                        </button>
-                    </form>
                 </div>
             </div>
 
