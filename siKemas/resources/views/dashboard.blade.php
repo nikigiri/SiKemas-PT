@@ -6,34 +6,33 @@
 
         <div class="relative overflow-hidden bg-white border-b border-gray-100">
 
+            <section class="relative pt-28 pb-0 px-6 lg:px-16 bg-gradient-to-br from-[#f0f4f0] via-white to-[#e8f5e9]">
+
             {{-- Decorative blobs --}}
-            <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-green-100 rounded-full blur-3xl opacity-30 pointer-events-none -translate-y-1/4 translate-x-1/4"></div>
-            <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-50 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+            <div class="absolute top-20 left-0 w-32 h-32 opacity-20 pointer-events-none select-none text-8xl">🌿</div>
+            <div class="absolute bottom-0 right-0 w-40 h-40 opacity-15 pointer-events-none select-none text-9xl">🌿</div>
 
-            <div class="relative z-10 max-w-8xl mx-auto px-6 md:px-8 lg:px-12 py-16 lg:py-20">
-                <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-12 relative z-10 min-h-[580px]">
 
-                    {{-- LEFT --}}
-                    <div class="text-left">
-                        <div class="inline-flex items-center gap-2 bg-green-50 border border-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mb-6">
-                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            AI Powered Packaging Design
-                        </div>
+                {{-- LEFT --}}
+                <div class="pb-16">
 
-                        <p class="text-xl font-semibold text-gray-500 mb-2">
-                            Hallo, {{ Auth::user()->name }}
-                        </p>
+                    {{-- BADGE --}}
+                    <div class="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-[#2f6d46] px-4 py-2 rounded-full text-sm font-medium mb-8">
+                        ✦ AI Powered Packaging Design
+                    </div>
 
-                        <h1 class="text-4xl lg:text-5xl font-extrabold leading-tight text-gray-900 tracking-tight">
-                            Buat Desain
-                            <span class="text-[#2f6d46]">Kemasan Produk</span><br>
-                            Lebih Menarik dengan AI
-                        </h1>
+                    <p class="text-xl font-semibold text-gray-500 mb-2">
+                        Hallo, {{ Auth::user()->name }}
+                    </p>
+     
+                    <h1 class="text-4xl lg:text-5xl font-extrabold leading-tight text-gray-900">
+                        Buat Desain <span class="text-[#2f6d46]">Kemasan<br>Produk</span> Lebih Menarik<br>dengan AI
+                    </h1>
 
-                        <p class="mt-5 text-base text-gray-500 leading-relaxed max-w-lg">
-                            SiKemas membantu UMKM menciptakan ide desain kemasan yang modern,
-                            menarik, dan sesuai branding bisnis hanya dalam hitungan detik.
-                        </p>
+                    <p class="mt-6 text-base text-gray-500 leading-relaxed max-w-md">
+                        Si Kemas membantu UMKM menciptakan ide desain kemasan yang modern, menarik, dan sesuai branding bisnis hanya dalam hitungan detik.
+                    </p>
 
                         {{-- CTA --}}
                         <div class="mt-8">
@@ -50,27 +49,13 @@
                     </div>
 
                     {{-- RIGHT --}}
-                    <div class="relative flex justify-center lg:justify-end">
-                        <div class="relative w-full max-w-md">
-                            <img src="{{ asset('images/mockup.png') }}"
-                                 alt="Kemasan Produk"
-                                 class="w-full h-auto rounded-3xl shadow-xl relative z-10">
-
-                            {{-- Floating badge --}}
-                            <div class="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-20 flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
-                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-bold text-gray-800">AI Recommendation</p>
-                                    <p class="text-xs text-gray-400">Warna & desain otomatis</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="relative flex justify-center items-end h-full pt-8">
+                        <img
+                            src="{{ asset('images/gambar.png') }}"
+                            alt="Contoh Kemasan Produk"
+                            class="w-full max-w-md lg:max-w-lg h-auto object-contain relative z-10 drop-shadow-xl"
+                        />
                     </div>
-
                 </div>
             </div>
         </div>
