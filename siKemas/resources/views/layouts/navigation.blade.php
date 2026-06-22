@@ -10,12 +10,12 @@
 
             {{-- LOGO --}}
             <a href="{{ Auth::user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}"
-            class="flex items-center shrink-0">
-            <img 
-                src="{{ asset('images/logo_siKemas_PT.png') }}" 
-                alt="Si Kemas" 
-                class="h-12 w-auto"
-            />
+                class="flex items-center shrink-0">
+                <img 
+                    src="{{ asset('images/logo_siKemas_PT.png') }}" 
+                    alt="Si Kemas" 
+                    class="h-12 w-auto"
+                />
             </a>
 
                 {{-- ADMIN BADGE (hanya muncul di navbar admin) --}}

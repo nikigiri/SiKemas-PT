@@ -9,8 +9,6 @@
             <section class="relative pt-28 pb-0 px-6 lg:px-16 bg-gradient-to-br from-[#f0f4f0] via-white to-[#e8f5e9]">
 
             {{-- Decorative blobs --}}
-            <div class="absolute top-20 left-0 w-32 h-32 opacity-20 pointer-events-none select-none text-8xl">🌿</div>
-            <div class="absolute bottom-0 right-0 w-40 h-40 opacity-15 pointer-events-none select-none text-9xl">🌿</div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-12 relative z-10 min-h-[580px]">
 
