@@ -39,37 +39,23 @@
                 {{-- SEARCH — hanya untuk user biasa --}}
                 @unless(Auth::user()->hasRole('admin'))
                 <div class="w-[380px]">
-                    <div class="relative w-full">
-
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                            <svg class="h-4 w-4 text-gray-400"
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 fill="none"
-                                 viewBox="0 0 24 24"
-                                 stroke-width="2"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
-                            </svg>
+                    <form method="GET" action="{{ route('dashboard') }}" id="searchForm">
+                        <div class="relative w-full">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                                <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+                                </svg>
+                            </div>
+                            <input
+                                type="text"
+                                name="search"
+                                id="navSearch"
+                                value="{{ request('search') }}"
+                                placeholder="Cari desain atau produk..."
+                                class="w-full h-11 pl-10 pr-4 bg-gray-100 border border-transparent rounded-2xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition duration-200"
+                            />
                         </div>
-
-                        <input
-                            type="text"
-                            placeholder="Cari desain atau produk..."
-                            class="w-full h-11 pl-10 pr-4
-                                   bg-gray-100 border border-transparent
-                                   rounded-2xl text-sm text-gray-800
-                                   placeholder-gray-400
-                                   focus:outline-none
-                                   focus:bg-white
-                                   focus:border-indigo-500
-                                   focus:ring-4
-                                   focus:ring-indigo-500/10
-                                   transition duration-200"
-                        />
-
-                    </div>
+                    </form>
                 </div>
                 @endunless
 
@@ -261,5 +247,25 @@
         </div>
 
     </div>
+<script>
+const navSearch = document.getElementById('navSearch');
+if (navSearch) {
+    navSearch.addEventListener('input', function() {
+        const keyword = this.value.toLowerCase();
+        document.querySelectorAll('.card-produk').forEach(card => {
+            const nama = card.querySelector('h3')?.textContent.toLowerCase() ?? '';
+            const kategori = card.querySelector('.text-xs')?.textContent.toLowerCase() ?? '';
+            card.style.display = (nama.includes(keyword) || kategori.includes(keyword)) ? '' : 'none';
+        });
+    });
 
+    navSearch.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('searchForm').submit();
+        }
+    });
+}
+</script>
 </nav>
+

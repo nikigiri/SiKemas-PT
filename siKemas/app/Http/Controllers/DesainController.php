@@ -26,6 +26,9 @@ class DesainController extends Controller
 
     public function store(Request $request)
     {
+        set_time_limit(300); // ← tambahkan ini
+    ini_set('max_execution_time', 300);
+    
         $request->validate([
             'produk_id'             => ['required', 'exists:produks,id'],
             'jenis_kemasan_id'      => ['required', 'exists:jenis_kemasans,id'],

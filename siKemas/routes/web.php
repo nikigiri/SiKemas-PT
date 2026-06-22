@@ -102,13 +102,16 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])
 // USER ROUTES
 Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
     ->group(function () {
-        Route::get('/dashboard', function () {
+        Route::get('/dashboard', function (Request $request) {
+            $search = $request->get('search');
             $produks = Produk::where('user_id', auth()->id())
                 ->with('desains')
+                ->when($search, fn($q) => $q->where('nama_produk', 'like', "%{$search}%")
+                                            ->orWhere('kategori_produk', 'like', "%{$search}%"))
                 ->latest()
                 ->take(6)
                 ->get();
-            return view('dashboard', compact('produks'));
+            return view('dashboard', compact('produks', 'search'));
         })->name('dashboard');
 
         Route::resource('produk', ProdukController::class);
@@ -121,7 +124,6 @@ Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
             ->only(['index', 'store', 'show', 'destroy']);
 
         Route::get('/desain/{id}/export', [DesainController::class, 'exportPdf'])->name('desain.export');
-        
     });
 
 
