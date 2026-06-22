@@ -3,13 +3,16 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             
             <div class="flex items-center gap-3">
-                <a href="{{ auth()->user()->hasRole('superadmin') ? route('admin.dashboard') : route('kwt-admin.dashboard') }}" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow hover:bg-gray-100 transition"></a>
-                    
+
+                <a href="{{ route('admin.dashboard') }}"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow hover:bg-gray-100 transition">
+
                     <svg class="w-5 h-5 text-gray-600"
                         fill="none"
                         stroke="currentColor"
                         stroke-width="1.8"
                         viewBox="0 0 24 24">
+
                         <path stroke-linecap="round"
                             stroke-linejoin="round"
                             d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
