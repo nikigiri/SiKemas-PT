@@ -141,14 +141,12 @@ class DesainController extends Controller
         return redirect()->route('produk.show', $produk_id)->with('success', 'Desain berhasil dihapus!');
     }
 
-    // --- PRIVATE METHODS UNTUK AI INTEGRATION ---
-
     private function createImagePrompt(
-    Produk $produk,
-    JenisKemasan $jenisKemasan,
-    PaletWarna $paletWarna,
-    ?string $instruksi
-): string {
+        Produk $produk,
+        JenisKemasan $jenisKemasan,
+        PaletWarna $paletWarna,
+        ?string $instruksi
+    ): string {
     $prompt = "
     Kamu adalah prompt engineer profesional untuk AI Image Generation.
 
@@ -194,7 +192,8 @@ class DesainController extends Controller
         PaletWarna $paletWarna,
         ?string $instruksi
     ): string {
-        $prompt = "Kamu adalah desainer kemasan profesional.
+        $prompt = "Kamu adalah desainer kemasan profesional bagi para umkm.
+        Buatkan desain kemasan dengan spesifikasi berikut, dan cantumkan logo yang sudah dikirim:
 
         Produk: {$produk->nama_produk}
         Jenis Kemasan: {$jenisKemasan->nama_kemasan}
