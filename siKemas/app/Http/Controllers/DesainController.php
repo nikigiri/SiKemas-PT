@@ -202,17 +202,17 @@ class DesainController extends Controller
         Warna Aksen: {$paletWarna->warna_aksen}
         Instruksi tambahan: {$instruksi}
 
-        Buat penjelasan konsep desain kemasan dalam bahasa Indonesia.
-        Jelaskan: 1. Konsep utama, 2. Elemen visual, 3. Kesan yang ditimbulkan.
-        Maksimal 2 paragraf.";
+        Buat penjelasan konsep desain kemasan dalam bahasa Indonesia secara singkat, padat, dan ringkas.
+        ";
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . config('services.openai.api_key'),
             'Content-Type'  => 'application/json',
         ])  ->timeout(120)
             ->post('https://api.openai.com/v1/chat/completions', [
-                'model'    => config('services.openai.model'),
-                'messages' => [
+                'model'      => config('services.openai.model'),
+
+                'messages'   => [
                     ['role' => 'user', 'content' => $prompt]
             ],
         ]);
