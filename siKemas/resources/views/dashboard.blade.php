@@ -8,12 +8,10 @@
 
             <section class="relative pt-28 pb-0 px-6 lg:px-16 bg-gradient-to-br from-[#f0f4f0] via-white to-[#e8f5e9]">
 
-            {{-- Decorative blobs --}}
-
             <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-12 relative z-10 min-h-[580px]">
 
                 {{-- LEFT --}}
-                <div class="pb-16">
+                <div class="pb-12">
 
                     {{-- BADGE --}}
                     <div class="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-[#2f6d46] px-4 py-2 rounded-full text-sm font-medium mb-8">
@@ -36,9 +34,9 @@
                         <div class="mt-8">
                             <a href="{{ route('produk.create') }}"
                                class="inline-flex items-center gap-3 bg-[#2f6d46] hover:bg-[#245538]
-                                      text-white px-10 py-5 rounded-2xl font-bold text-lg
+                                      text-white px-8 py-4 rounded-2xl font-bold text-base
                                       shadow-lg shadow-green-200 hover:scale-[1.02] transition duration-200">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                                 </svg>
                                 Buat Produk
@@ -55,7 +53,7 @@
                         />
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
 
         {{--PRODUK SAYA--}}
@@ -76,7 +74,7 @@
             </div>
 
             @php
-                $produks = Auth::user()->produks()->with('desains')->latest()->take(6)->get();
+                $produks = Auth::user()->produks()->with('desains')->latest()->take(3)->get();
             @endphp
 
             @if($produks->isEmpty())
@@ -160,7 +158,6 @@
             @endif
 
         </div>
-
     </div>
 
 </x-app-layout>

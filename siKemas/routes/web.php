@@ -109,7 +109,7 @@ Route::middleware(['auth', RoleMiddleware::class . ':user', 'approved'])
                 ->when($search, fn($q) => $q->where('nama_produk', 'like', "%{$search}%")
                                             ->orWhere('kategori_produk', 'like', "%{$search}%"))
                 ->latest()
-                ->take(6)
+                ->take(3)
                 ->get();
             return view('dashboard', compact('produks', 'search'));
         })->name('dashboard');
